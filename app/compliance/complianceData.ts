@@ -1,4 +1,4 @@
-// @/app/compliance/complizanceData.ts
+// @/app/compliance/complianceData.ts
 // Dernière mise à jour : février 2026
 
 export interface RegulatoryDocument {
