@@ -89,7 +89,7 @@ export default function AdminPage(): JSX.Element {
       description:
         "Infrastructures, zones, capacités et implantation du matériel.",
       icon: Building2,
-      href: "/admin/buildings",
+      href: "/aviculture/admin/buildings",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-blue-50 dark:bg-blue-950",
@@ -132,7 +132,7 @@ export default function AdminPage(): JSX.Element {
       title: "Gestion des lots",
       description: "Suivi de vie du lot (entrée, âge, performance, rotation).",
       icon: Package,
-      href: "/admin/batches",
+      href: "/aviculture/admin/batches",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-green-50 dark:bg-green-950",
@@ -179,7 +179,7 @@ export default function AdminPage(): JSX.Element {
       description:
         "Saisie opérationnelle + contrôles de cohérence jour par jour.",
       icon: ClipboardList,
-      href: "/admin/daily-production",
+      href: "/aviculture/admin/daily-production",
       role: "opérateur",
       theme: {
         iconBg: "bg-purple-50 dark:bg-purple-950",
@@ -226,7 +226,7 @@ export default function AdminPage(): JSX.Element {
       description:
         "Contrôle qualité, non-conformités, lots de production et étiquetage.",
       icon: ShieldCheck,
-      href: "/admin/quality",
+      href: "/aviculture/admin/quality",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-amber-50 dark:bg-amber-950",
@@ -286,7 +286,7 @@ export default function AdminPage(): JSX.Element {
       title: "Santé animale & Biosécurité",
       description: "Vaccins, traitements, mortalité et prévention.",
       icon: HeartPulse,
-      href: "/admin/health",
+      href: "/aviculture/admin/health",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-red-50 dark:bg-red-950",
@@ -340,7 +340,7 @@ export default function AdminPage(): JSX.Element {
       description:
         "Ambiance bâtiment (température, humidité, CO2, NH3, lumière).",
       icon: Thermometer,
-      href: "/admin/environmental",
+      href: "/aviculture/admin/environmental",
       role: "opérateur",
       theme: {
         iconBg: "bg-orange-50 dark:bg-orange-950",
@@ -386,7 +386,7 @@ export default function AdminPage(): JSX.Element {
       title: "Stocks & Approvisionnements",
       description: "Référentiel articles, stocks, achats et fournisseurs.",
       icon: Package2,
-      href: "/admin/inventory-supply",
+      href: "/aviculture/admin/inventory-supply",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-cyan-50 dark:bg-cyan-950",
@@ -439,7 +439,7 @@ export default function AdminPage(): JSX.Element {
       title: "Finance & comptabilité",
       description: "Coûts, revenus, trésorerie et rentabilité.",
       icon: DollarSign,
-      href: "/admin/finance",
+      href: "/aviculture/admin/finance",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-emerald-50 dark:bg-emerald-950",
@@ -492,7 +492,7 @@ export default function AdminPage(): JSX.Element {
       title: "Maintenance & équipements",
       description: "Préventif, pannes, pièces et disponibilité.",
       icon: Wrench,
-      href: "/admin/maintenance",
+      href: "/aviculture/admin/maintenance",
       role: "opérateur",
       theme: {
         iconBg: "bg-violet-50 dark:bg-violet-950",
@@ -552,7 +552,7 @@ export default function AdminPage(): JSX.Element {
       title: "Conformité réglementaire",
       description: "Registres, audits, certifications et preuves.",
       icon: Scale,
-      href: "/admin/compliance",
+      href: "/aviculture/admin/compliance",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-rose-50 dark:bg-rose-950",
@@ -598,7 +598,7 @@ export default function AdminPage(): JSX.Element {
       title: "Rapports & analyses",
       description: "KPIs transverses, exports, comparatifs et tendances.",
       icon: BarChart3,
-      href: "/admin/reports",
+      href: "/aviculture/admin/reports",
       role: "visiteur",
       theme: {
         iconBg: "bg-indigo-50 dark:bg-indigo-950",
@@ -644,7 +644,7 @@ export default function AdminPage(): JSX.Element {
       title: "Gestion des utilisateurs",
       description: "Comptes, rôles, permissions et traçabilité.",
       icon: Users,
-      href: "/admin/workers",
+      href: "/aviculture/admin/workers",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-pink-50 dark:bg-pink-950",
@@ -690,7 +690,7 @@ export default function AdminPage(): JSX.Element {
       title: "Paramètres & configuration",
       description: "Paramètres système, unités, intégrations et sauvegardes.",
       icon: Settings,
-      href: "/admin/settings",
+      href: "/aviculture/admin/settings",
       role: "gestionnaire",
       theme: {
         iconBg: "bg-slate-50 dark:bg-slate-950",
@@ -742,7 +742,7 @@ export default function AdminPage(): JSX.Element {
 
   const totalTools = modules.reduce(
     (total, module) => total + module.tools.length,
-    0
+    0,
   );
   const maxToolsPerModule = Math.max(...modules.map((m) => m.tools.length));
 

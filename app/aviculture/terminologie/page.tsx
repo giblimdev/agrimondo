@@ -10,18 +10,18 @@ import {
   TermeTraduit,
   TableBDD,
   ChampBDD,
-} from "@/app/public/terminologie/terminologieData";
+} from "@/app/aviculture/terminologie/terminologieData";
 
 export default function TerminologiePage() {
   const [langueAffichage, setLangueAffichage] = useState<"fr" | "en" | "es">(
-    "fr"
+    "fr",
   );
   const [recherche, setRecherche] = useState("");
   const [resultatsRecherche, setResultatsRecherche] = useState<TermeTraduit[]>(
-    []
+    [],
   );
   const [sectionActive, setSectionActive] = useState<string>(
-    "terminologieGenerale"
+    "terminologieGenerale",
   );
   const [showTablesBDD, setShowTablesBDD] = useState(false);
   const [showRoles, setShowRoles] = useState(false);
@@ -124,8 +124,8 @@ export default function TerminologiePage() {
           {langueAffichage === "fr"
             ? "Définition"
             : langueAffichage === "en"
-            ? "Definition"
-            : "Definición"}
+              ? "Definition"
+              : "Definición"}
         </div>
         <div className="text-gray-800">{terme.definition}</div>
       </div>
@@ -153,8 +153,8 @@ export default function TerminologiePage() {
         {langueAffichage === "fr"
           ? "Description: "
           : langueAffichage === "en"
-          ? "Description: "
-          : "Descripción: "}
+            ? "Description: "
+            : "Descripción: "}
         {table.description}
       </div>
     </div>
@@ -199,8 +199,8 @@ export default function TerminologiePage() {
                   langueAffichage === "fr"
                     ? "Rechercher un terme..."
                     : langueAffichage === "en"
-                    ? "Search a term..."
-                    : "Buscar un término..."
+                      ? "Search a term..."
+                      : "Buscar un término..."
                 }
                 value={recherche}
                 onChange={(e) => setRecherche(e.target.value)}
@@ -212,8 +212,8 @@ export default function TerminologiePage() {
                   {langueAffichage === "fr"
                     ? "résultats trouvés"
                     : langueAffichage === "en"
-                    ? "results found"
-                    : "resultados encontrados"}
+                      ? "results found"
+                      : "resultados encontrados"}
                 </div>
               )}
             </div>
@@ -224,8 +224,8 @@ export default function TerminologiePage() {
                   {langueAffichage === "fr"
                     ? "Langue:"
                     : langueAffichage === "en"
-                    ? "Language:"
-                    : "Idioma:"}
+                      ? "Language:"
+                      : "Idioma:"}
                 </span>
                 <select
                   value={langueAffichage}
@@ -271,8 +271,8 @@ export default function TerminologiePage() {
                 {langueAffichage === "fr"
                   ? "Résultats de recherche:"
                   : langueAffichage === "en"
-                  ? "Search results:"
-                  : "Resultados de búsqueda:"}
+                    ? "Search results:"
+                    : "Resultados de búsqueda:"}
               </h2>
               {resultatsRecherche.map(renderTerme)}
             </div>
@@ -284,8 +284,8 @@ export default function TerminologiePage() {
               {langueAffichage === "fr"
                 ? "Catégories:"
                 : langueAffichage === "en"
-                ? "Categories:"
-                : "Categorías:"}
+                  ? "Categories:"
+                  : "Categorías:"}
             </h3>
             <div className="flex flex-wrap gap-2">
               {sections.map((section) => (
@@ -358,8 +358,8 @@ export default function TerminologiePage() {
                           {langueAffichage === "fr"
                             ? "Description: "
                             : langueAffichage === "en"
-                            ? "Description: "
-                            : "Descripción: "}
+                              ? "Description: "
+                              : "Descripción: "}
                           {champ.description}
                         </div>
                       </div>
@@ -400,8 +400,8 @@ export default function TerminologiePage() {
                           {langueAffichage === "fr"
                             ? "Utilisateurs types:"
                             : langueAffichage === "en"
-                            ? "Typical users:"
-                            : "Usuarios típicos:"}
+                              ? "Typical users:"
+                              : "Usuarios típicos:"}
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {role.utilisateursTypes.map((type, idx) => (
@@ -420,8 +420,8 @@ export default function TerminologiePage() {
                           {langueAffichage === "fr"
                             ? "Permissions principales:"
                             : langueAffichage === "en"
-                            ? "Main permissions:"
-                            : "Permisos principales:"}
+                              ? "Main permissions:"
+                              : "Permisos principales:"}
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {role.permissions.slice(0, 5).map((perm, idx) => (
@@ -445,8 +445,8 @@ export default function TerminologiePage() {
                           {langueAffichage === "fr"
                             ? "Interface:"
                             : langueAffichage === "en"
-                            ? "Interface:"
-                            : "Interfaz:"}
+                              ? "Interface:"
+                              : "Interfaz:"}
                         </strong>{" "}
                         {role.interface}
                       </div>
@@ -478,8 +478,8 @@ export default function TerminologiePage() {
                     {langueAffichage === "fr"
                       ? "Termes techniques"
                       : langueAffichage === "en"
-                      ? "Technical terms"
-                      : "Términos técnicos"}
+                        ? "Technical terms"
+                        : "Términos técnicos"}
                   </div>
                 </div>
 
@@ -491,8 +491,8 @@ export default function TerminologiePage() {
                     {langueAffichage === "fr"
                       ? "Support multilingue"
                       : langueAffichage === "en"
-                      ? "Multilingual support"
-                      : "Soporte multilingüe"}
+                        ? "Multilingual support"
+                        : "Soporte multilingüe"}
                   </div>
                 </div>
 
@@ -504,8 +504,8 @@ export default function TerminologiePage() {
                     {langueAffichage === "fr"
                       ? "Catégories thématiques"
                       : langueAffichage === "en"
-                      ? "Thematic categories"
-                      : "Categorías temáticas"}
+                        ? "Thematic categories"
+                        : "Categorías temáticas"}
                   </div>
                 </div>
 
@@ -514,8 +514,8 @@ export default function TerminologiePage() {
                     {langueAffichage === "fr"
                       ? "Raccourcis rapides:"
                       : langueAffichage === "en"
-                      ? "Quick links:"
-                      : "Accesos rápidos:"}
+                        ? "Quick links:"
+                        : "Accesos rápidos:"}
                   </h4>
                   <div className="space-y-2">
                     {[
@@ -551,8 +551,8 @@ export default function TerminologiePage() {
                     langueAffichage === "fr"
                       ? "Entrez un terme..."
                       : langueAffichage === "en"
-                      ? "Enter a term..."
-                      : "Ingrese un término..."
+                        ? "Enter a term..."
+                        : "Ingrese un término..."
                   }
                   id="translationInput"
                   className="w-full p-2 border border-gray-300 rounded"
@@ -560,7 +560,7 @@ export default function TerminologiePage() {
                 <button
                   onClick={() => {
                     const input = document.getElementById(
-                      "translationInput"
+                      "translationInput",
                     ) as HTMLInputElement;
                     if (input.value) {
                       const translation = obtenirTraduction(
@@ -569,8 +569,8 @@ export default function TerminologiePage() {
                         langueAffichage === "fr"
                           ? "en"
                           : langueAffichage === "en"
-                          ? "es"
-                          : "fr"
+                            ? "es"
+                            : "fr",
                       );
                       if (translation) {
                         alert(
@@ -578,17 +578,17 @@ export default function TerminologiePage() {
                             langueAffichage === "fr"
                               ? "Traduction:"
                               : langueAffichage === "en"
-                              ? "Translation:"
-                              : "Traducción:"
-                          } ${translation}`
+                                ? "Translation:"
+                                : "Traducción:"
+                          } ${translation}`,
                         );
                       } else {
                         alert(
                           langueAffichage === "fr"
                             ? "Terme non trouvé"
                             : langueAffichage === "en"
-                            ? "Term not found"
-                            : "Término no encontrado"
+                              ? "Term not found"
+                              : "Término no encontrado",
                         );
                       }
                     }
@@ -598,8 +598,8 @@ export default function TerminologiePage() {
                   {langueAffichage === "fr"
                     ? "Trouver la traduction"
                     : langueAffichage === "en"
-                    ? "Find translation"
-                    : "Buscar traducción"}
+                      ? "Find translation"
+                      : "Buscar traducción"}
                 </button>
               </div>
             </div>
@@ -612,8 +612,8 @@ export default function TerminologiePage() {
             {langueAffichage === "fr"
               ? "Lexique mis à jour le 30 décembre 2025"
               : langueAffichage === "en"
-              ? "Lexicon updated on December 30, 2025"
-              : "Léxico actualizado el 30 de diciembre de 2025"}
+                ? "Lexicon updated on December 30, 2025"
+                : "Léxico actualizado el 30 de diciembre de 2025"}
           </div>
           <GoHome />
         </div>

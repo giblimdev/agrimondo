@@ -62,14 +62,14 @@ export const PUBLIC_PAGES: NavCategory[] = [
       },
       {
         title: "Alimentation",
-        href: "/avicultureelevage/alimentation",
+        href: "/aviculture/elevage/alimentation",
         description:
           "Phases alimentaires, gestion de l’eau, stockage et distribution.",
         icon: Egg,
       },
       {
         title: "Conduite en lots",
-        href: "/avicultureelevage/conduite-lots",
+        href: "/aviculture/elevage/conduite-lots",
         description:
           "Gestion des bandes, vide sanitaire et continuité de production.",
         icon: ClipboardList,
@@ -163,7 +163,7 @@ export const PUBLIC_PAGES: NavCategory[] = [
       },
       {
         title: "Qualité & traçabilité",
-        href: "/public/prod/qualite-production",
+        href: "/aviculture/prod/qualite-production",
         description: "Procédures HACCP, registres et contrôles qualité.",
         icon: Scale,
       },
@@ -185,13 +185,13 @@ export const PUBLIC_PAGES: NavCategory[] = [
       },
       {
         title: "Politique tarifaire",
-        href: "/aviculturevente/tarification",
+        href: "/aviculture/vente/tarification",
         description: "Méthodes de fixation des prix et marges.",
         icon: Scale,
       },
       {
         title: "Recettes",
-        href: "/aviculturevente/recettes",
+        href: "/aviculture/vente/recettes",
         description:
           "Idées pour valoriser les produits et réduire le gaspillage.",
         icon: UtensilsCrossed,
@@ -227,7 +227,7 @@ export const PUBLIC_PAGES: NavCategory[] = [
       },
       {
         title: "Base documentaire",
-        href: "/user/reglementation/base-documentaire",
+        href: "/aviculture/reglementation/base-documentaire",
         description: "Ressources et modèles (connexion requise).",
         icon: BookOpen,
       },
@@ -242,19 +242,19 @@ export const PUBLIC_PAGES: NavCategory[] = [
     items: [
       {
         title: "Aide application",
-        href: "/public/help/aide",
+        href: "/aviculture/appHelp",
         description: "Tutoriels, guides et dépannage utilisateur.",
         icon: HelpCircle,
       },
       {
         title: "FAQ",
-        href: "/public/help/faq",
+        href: "/aviculture/faq",
         description: "Questions fréquentes et solutions rapides.",
         icon: ClipboardList,
       },
       {
         title: "Contact",
-        href: "/public/help/contact",
+        href: "/contact",
         description: "Contacter le support technique PolloMundo.",
         icon: Mail,
       },

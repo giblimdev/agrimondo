@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { recipes, type Recipe } from "@/app/public/recettes/recettesData";
+import { recipes, type Recipe } from "@/data/recettes/recettesData";
 
 function RecipeCard({ r }: { r: Recipe }) {
   const img = r.image?.[0]; // dans tes datas: ["huevos-rancheros-1.jpg", ...] [file:330]
