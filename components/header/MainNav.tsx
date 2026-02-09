@@ -1,4 +1,17 @@
+"use client";
+
 import Link from "next/link";
+import * as React from "react";
+
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
 type NavItem = {
   label: string;
@@ -7,22 +20,51 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  {
-    label: "homr",
-    href: "/",
-    children: [],
-  },
+  { label: "Home", href: "/", children: [] },
   {
     label: "Cultures",
     href: "/cultures",
     children: [
       { label: "Dashboard", href: "/cultures" },
       { label: "Production", href: "/cultures/production" },
-      { label: "Recettes", href: "/cultures/recettes" },
+      { label: "Serre", href: "/serre" },
+      { label: "Recettes", href: "/recettes" },
     ],
   },
- 
- {
+  {
+    label: "Champignon",
+    href: "/mycoculture",
+    children: [
+      { label: "Guide de culture", href: "/mycoculture/guideMycoculture" },
+      { label: "Glossaire", href: "/mycoculture/glossary" },
+    ],
+  },
+  {
+    label: "Aquaponie",
+    href: "/aquaponie",
+    children: [
+      { label: "Guide de culture", href: "/aquaponie/guideAquaponie" },
+      { label: "Glossaire", href: "/aquaponie/glossary" },
+    ],
+  },
+  {
+    label: "Apiculture",
+    href: "/apiculture",
+    children: [
+      { label: "Dashboard", href: "/apiculture" },
+      { label: "Glossaire", href: "/apiculture/glossary" },
+    ],
+  },
+  {
+    label: "Aviculture",
+    href: "/aviculture",
+    children: [
+      { label: "Dashboard", href: "/aviculture" },
+      { label: "Admin", href: "/aviculture/admin" },
+      { label: "Glossaire", href: "/aviculture/glossary" },
+    ],
+  },
+  {
     label: "BSF",
     href: "/bsf",
     children: [
@@ -32,67 +74,72 @@ const NAV: NavItem[] = [
     ],
   },
   {
-    label: "Hydroponie",
-    href: "/hydroponie",
+    label: "Recettes",
+    href: "/recettes",
     children: [
-      { label: "Systèmes", href: "/hydroponie/systemes" },
-      { label: "Cultures", href: "/hydroponie/cultures" },
-    ],
-  },
-  {
-    label: "Serre",
-    href: "/serre",
-    children: [
-      { label: "Parcelles", href: "/serre/parcelles" },
-      { label: "Climat", href: "/serre/climat" },
-    ],
-  },
-  {
-    label: "Pleine terre",
-    href: "/pleine-terre",
-    children: [
-      { label: "Parcelles", href: "/pleine-terre/parcelles" },
-      { label: "Travaux", href: "/pleine-terre/travaux" },
-    ],
-  },
-  {
-    label: "Champignon",
-    href: "/champignon",
-    children: [
-      { label: "Salles", href: "/champignon/salles" },
-      { label: "Cycles", href: "/champignon/cycles" },
-    ],
-  },
-  {
-    label: "Aquaponie",
-    href: "/aquaponie",
-    children: [
-      { label: "Bassins", href: "/aquaponie/bassins" },
-      { label: "Planches", href: "/aquaponie/planches" },
+      { label: "Dashboard", href: "/recettes" },
+      { label: "Oeuf", href: "/recettes/oeuf" },
+      { label: "Poule", href: "/recettes/poule" },
+      { label: "Legumes", href: "/recettes/legumes" },
     ],
   },
 ];
 
 export function MainNav() {
   return (
-    <nav aria-label="Navigation principale">
-      <ul style={{ display: "flex", gap: 16, listStyle: "none", padding: 0, margin: 0 }}>
-        {NAV.map((item) => (
-          <li key={item.href}>
-            <Link href={item.href}>{item.label}</Link>
+    <NavigationMenu>
+      <NavigationMenuList>
+        {NAV.map((item) => {
+          const hasChildren = (item.children?.length ?? 0) > 0;
 
-            {item.children?.length ? (
-              <ul style={{ listStyle: "none", padding: 0, marginTop: 8 }}>
-                {item.children.map((child) => (
-                  <li key={child.href}>
-                    <Link href={child.href}>{child.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-    </nav>
+          if (!hasChildren) {
+            return (
+              <NavigationMenuItem key={item.href}>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link href={item.href}>{item.label}</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            );
+          }
+
+          return (
+            <NavigationMenuItem key={item.href}>
+              <NavigationMenuTrigger>{item.label}</NavigationMenuTrigger>
+
+              <NavigationMenuContent>
+                <div className="w-[320px] p-3 md:w-95">
+                  {/* Lien “entrée” */}
+                  <Link
+                    href={item.href}
+                    className="block rounded-md p-3 text-sm font-medium hover:bg-accent"
+                  >
+                    Aller à {item.label}
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      Ouvrir le dashboard / vue principale
+                    </div>
+                  </Link>
+
+                  <div className="mt-2 grid gap-1">
+                    {item.children!.map((child) => (
+                      <NavigationMenuLink asChild key={child.href}>
+                        <Link
+                          href={child.href}
+                          className="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                        >
+                          {child.label}
+                        </Link>
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          );
+        })}
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 }

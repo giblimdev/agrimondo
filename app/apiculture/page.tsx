@@ -1,319 +1,418 @@
-import React from 'react'
+"use client";
 
-export default function page() {
+import { useState } from "react";
+import {
+  Play,
+  ChevronRight,
+  BookOpen,
+  Shield,
+  Bug,
+  Heart,
+  Droplets,
+  Package,
+} from "lucide-react";
+import Ruches from "./Ruches";
+
+export default function ApiculturePage() {
+  const [activeModule, setActiveModule] = useState(0);
+
+  const modules = [
+    {
+      id: 0,
+      title: "Introduction à l'Apiculture",
+      icon: <Bug className="w-6 h-6" />,
+      content: {
+        video: "https://www.youtube.com/watch?v=exemple_intro",
+        description:
+          "Découvrez les raisons de devenir apiculteur et les bases de cette passion",
+      },
+    },
+    {
+      id: 1,
+      title: "Fondations Théoriques",
+      icon: <BookOpen className="w-6 h-6" />,
+      sections: [
+        {
+          title: "Biologie de l'Abeille",
+          video: "https://www.youtube.com/watch?v=exemple_biologie",
+          points: [
+            "Les trois castes et leurs cycles biologiques",
+            "Développement de l'œuf à l'adulte",
+          ],
+        },
+        {
+          title: "Organisation Sociale",
+          video: "https://www.youtube.com/watch?v=exemple_communication",
+          points: [
+            "Communication : danse des abeilles",
+            "Division du travail selon l'âge",
+          ],
+        },
+        {
+          title: "Cadre Légal",
+          video: "https://www.youtube.com/watch?v=exemple_reglementation",
+          points: [
+            "Déclaration des ruches",
+            "Distances légales",
+            "Normes sanitaires",
+          ],
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: "Équipement et Installation",
+      icon: <Package className="w-6 h-6" />,
+      sections: [
+        {
+          title: "Matériel de l'Apiculteur",
+          video: "https://www.youtube.com/watch?v=1O9LmzhoRKI",
+          points: ["Équipement de protection", "Outils essentiels"],
+        },
+        {
+          title: "Type de Ruche",
+          video: "https://www.youtube.com/watch?v=TD6Cncx1DjA",
+          points: ["Dadant vs Langstroth vs Warré", "Avantages/inconvénients"],
+        },
+        {
+          title: "Implantation du Rucher",
+          video: "https://www.youtube.com/watch?v=exemple_implantation",
+          points: ["Critères d'emplacement", "Aménagement pratique"],
+        },
+      ],
+    },
+    {
+      id: 3,
+      title: "Gestion des Colonies",
+      icon: <Heart className="w-6 h-6" />,
+      sections: [
+        {
+          title: "Installation d'un Essaim",
+          video: "https://www.youtube.com/watch?v=exemple_essaim",
+          points: ["Achat ou récupération", "Transvasement ruchette → ruche"],
+        },
+        {
+          title: "Visite de Contrôle",
+          video: "https://www.youtube.com/watch?v=exemple_visite",
+          points: ["Fréquence des visites", "Lecture d'un cadre"],
+        },
+        {
+          title: "Gestion de l'Essaimage",
+          video: "https://www.youtube.com/watch?v=exemple_essaimage",
+          points: ["Signes précurseurs", "Récupération d'essaim"],
+        },
+        {
+          title: "Multiplication",
+          video: "https://www.youtube.com/watch?v=exemple_division",
+          points: ["Division de ruche", "Création de nuclei"],
+        },
+      ],
+    },
+    {
+      id: 4,
+      title: "Santé et Protection",
+      icon: <Shield className="w-6 h-6" />,
+      sections: [
+        {
+          title: "Lutte contre Varroa",
+          video: "https://www.youtube.com/watch?v=exemple_varroa",
+          points: ["Méthodes de monitoring", "Traitements biologiques"],
+        },
+        {
+          title: "Maladies et Ravageurs",
+          video: "https://www.youtube.com/watch?v=exemple_maladies",
+          points: ["Reconnaître les loques", "Lutte contre frelon asiatique"],
+        },
+        {
+          title: "Préparation Hivernage",
+          video: "https://www.youtube.com/watch?v=exemple_hivernage",
+          points: ["Nourrissage d'automne", "Isolation et protection"],
+        },
+      ],
+    },
+    {
+      id: 5,
+      title: "Production et Récolte",
+      icon: <Droplets className="w-6 h-6" />,
+      sections: [
+        {
+          title: "Comprendre les Miellées",
+          video: "https://www.youtube.com/watch?v=exemple_miellee",
+          points: ["Calendrier des floraisons", "Observation des entrées"],
+        },
+        {
+          title: "Récolte du Miel",
+          video: "https://www.youtube.com/watch?v=exemple_extraction",
+          points: ["Moment optimal", "Extraction et maturation"],
+        },
+        {
+          title: "Autres Produits",
+          video: "https://www.youtube.com/watch?v=exemple_produits",
+          points: ["Récolte de pollen", "Production de propolis"],
+        },
+      ],
+    },
+    {
+      id: 6,
+      title: "Élevage de Reines",
+      icon: <Bug className="w-6 h-6" />,
+      sections: [
+        {
+          title: "Sélection des Souches",
+          video: "https://www.youtube.com/watch?v=exemple_selection",
+          points: ["Critères sur 2-3 ans", "Marquage des reines"],
+        },
+        {
+          title: "Technique du Greffage",
+          video: "https://www.youtube.com/watch?v=exemple_greffage",
+          points: ["Matériel spécifique", "Prélèvement de larve"],
+        },
+        {
+          title: "Méthodes Alternatives",
+          video: "https://www.youtube.com/watch?v=exemple_sans_greffe",
+          points: ["Méthode Miller", "Systèmes Cupularve"],
+        },
+      ],
+    },
+  ];
+
   return (
-    <div>page</div>
-  )
+    <div className="min-h-screen bg-amber-50">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6">
+        <div className="container mx-auto">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            Guide Complet d'Apiculture
+          </h1>
+          <p className="text-amber-100">De débutant à apiculteur confirmé</p>
+        </div>
+      </header>
+
+      <div className="container mx-auto p-4 md:p-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar Navigation */}
+          <div className="lg:w-1/4">
+            <div className="bg-white rounded-xl shadow-lg p-4 sticky top-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">
+                Modules de Formation
+              </h2>
+              <nav className="space-y-2">
+                {modules.map((module) => (
+                  <button
+                    key={module.id}
+                    onClick={() => setActiveModule(module.id)}
+                    className={`w-full text-left p-3 rounded-lg transition-all duration-200 flex items-center gap-3 ${
+                      activeModule === module.id
+                        ? "bg-amber-100 text-amber-800 border-l-4 border-amber-500"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    <div className="text-amber-600">{module.icon}</div>
+                    <span className="font-medium">{module.title}</span>
+                    <ChevronRight className="w-4 h-4 ml-auto" />
+                  </button>
+                ))}
+              </nav>
+
+              <div className="mt-8 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <h3 className="font-bold text-gray-800 mb-2">
+                  📺 Ressources Vidéos
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Chaque module contient des vidéos explicatives pour visualiser
+                  les techniques.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:w-3/4">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              {/* Module Header */}
+              <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-6 border-b">
+                <div className="flex items-center gap-4 mb-2">
+                  <div className="p-2 bg-amber-600 text-white rounded-lg">
+                    {modules[activeModule].icon}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+                      {modules[activeModule].title}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="px-3 py-1 bg-amber-500 text-white text-sm rounded-full">
+                        {activeModule === 0
+                          ? "Débutant"
+                          : activeModule === 6
+                            ? "Avancé"
+                            : "Intermédiaire"}
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        Module {activeModule + 1} sur {modules.length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Module Content */}
+              <div className="p-6">
+                {activeModule === 0 ? (
+                  // Introduction Module
+                  <div className="space-y-6">
+                    <div className="bg-amber-50 p-6 rounded-xl border border-amber-200">
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">
+                        Vidéo d'introduction
+                      </h3>
+                      <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <button className="bg-red-600 text-white p-4 rounded-full hover:bg-red-700 transition-transform hover:scale-105">
+                            <Play className="w-8 h-8" />
+                          </button>
+                        </div>
+                      </div>
+                      <p className="mt-4 text-gray-600">
+                        {modules[activeModule].content?.description}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-white p-4 rounded-xl border border-gray-200">
+                        <h4 className="font-bold text-gray-800 mb-2">
+                          🐝 Pourquoi commencer ?
+                        </h4>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Contribuer à la biodiversité</li>
+                          <li>• Produire son propre miel</li>
+                          <li>• Activité pédagogique</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-gray-200">
+                        <h4 className="font-bold text-gray-800 mb-2">
+                          📅 Temps requis
+                        </h4>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• 1-2 heures/semaine</li>
+                          <li>• Investissement initial modéré</li>
+                          <li>• Formation progressive</li>
+                        </ul>
+                      </div>
+                      <div className="bg-white p-4 rounded-xl border border-gray-200">
+                        <h4 className="font-bold text-gray-800 mb-2">
+                          🎯 Objectifs
+                        </h4>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Première récolte en 6 mois</li>
+                          <li>• Gérer 2-3 ruches</li>
+                          <li>• Comprendre l'écosystème</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  // Other Modules
+                  <div className="space-y-8">
+                    {modules[activeModule].sections?.map((section, index) => (
+                      <div
+                        key={index}
+                        className="border-l-4 border-amber-500 pl-6 py-2"
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">
+                              {section.title}
+                            </h3>
+                            <ul className="space-y-1 text-gray-600">
+                              {section.points.map((point, idx) => (
+                                <li key={idx} className="flex items-start">
+                                  <ChevronRight className="w-4 h-4 text-amber-500 mr-2 mt-1 flex-shrink-0" />
+                                  {point}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <a
+                            href={section.video}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                          >
+                            <Play className="w-4 h-4" />
+                            <span className="text-sm font-medium">
+                              Voir la vidéo
+                            </span>
+                          </a>
+                        </div>
+
+                        {/* Video Preview */}
+                        <div className="mt-4 bg-gray-900 rounded-lg overflow-hidden">
+                          <div className="p-4 text-white">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
+                                <Play className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="font-medium">Vidéo conseillée</p>
+                                <p className="text-sm text-gray-300">
+                                  Durée : ~5-10 minutes
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Footer */}
+              <div className="border-t p-6 bg-gray-50">
+                <div className="flex justify-between">
+                  <button
+                    onClick={() =>
+                      setActiveModule(Math.max(0, activeModule - 1))
+                    }
+                    disabled={activeModule === 0}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                      activeModule === 0
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                    }`}
+                  >
+                    ← Précédent
+                  </button>
+
+                  <div className="flex items-center gap-4">
+                    <div className="hidden md:block text-sm text-gray-600">
+                      Progression :{" "}
+                      {Math.round(((activeModule + 1) / modules.length) * 100)}%
+                    </div>
+                    <button
+                      onClick={() =>
+                        setActiveModule(
+                          Math.min(modules.length - 1, activeModule + 1),
+                        )
+                      }
+                      disabled={activeModule === modules.length - 1}
+                      className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                        activeModule === modules.length - 1
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                          : "bg-amber-600 text-white hover:bg-amber-700"
+                      }`}
+                    >
+                      Suivant →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <Ruches />
+      </div>
+    </div>
+  );
 }
-/*
-Guide complet du débutant
-Produire du miel avec des ruches Langstroth
-
-Ce document est un manuel pas à pas, destiné à une personne sans expérience préalable, décrivant toutes les actions concrètes, l’utilisation détaillée du matériel, et la chronologie complète allant de l’implantation du rucher jusqu’à la récolte et la conservation du miel.
-
-1. Comprendre l’apiculture et le rôle de l’apiculteur
-
-L’apiculteur ne "fabrique" pas le miel. Il crée les conditions optimales pour que la colonie d’abeilles :
-
-se développe correctement,
-
-stocke des réserves,
-
-survive durablement.
-
-Le miel récolté est l’excédent produit par la colonie.
-
-2. La ruche Langstroth : description complète
-2.1. Principe fondamental
-
-La ruche Langstroth repose sur l’espace abeille (7 à 9 mm) qui empêche les abeilles de coller définitivement les éléments entre eux.
-
-2.2. Éléments de la ruche (du bas vers le haut)
-
-Support de ruche
-
-Pieds ou palette
-
-Protège de l’humidité, des fourmis et des rongeurs
-
-Plancher
-
-Plein ou grillagé
-
-Entrée des abeilles
-
-Corps de ruche
-
-Contient le couvain (œufs, larves)
-
-Généralement 10 cadres
-
-Cadres
-
-Cadres en bois
-
-Feuilles de cire gaufrée insérées
-
-Grille à reine (optionnelle)
-
-Empêche la reine de monter pondre dans les hausses
-
-Hausses
-
-Zones de stockage du miel
-
-1 à 3 selon la force de la colonie
-
-Couvre-cadre
-
-Isolation
-
-Peut accueillir un nourrisseur
-
-Toit
-
-Protection contre pluie et soleil
-
-3. Matériel du débutant et utilisation
-3.1. Équipement de protection
-
-Combinaison ou veste : protège des piqûres
-
-Voile : indispensable pour le visage
-
-Gants : utiles au début, optionnels avec l’expérience
-
-Bottes : éviter les entrées d’abeilles par le bas
-
-➡️ Toujours s’équiper AVANT d’ouvrir une ruche.
-
-3.2. Outils apicoles
-Enfumoir
-
-Sert à calmer les abeilles
-
-Utilisation :
-
-Allumer le combustible
-
-Produire une fumée froide
-
-2–3 bouffées à l’entrée puis sous le couvre-cadre
-
-Lève-cadres
-
-Décoller les cadres collés par la propolis
-
-Soulever sans écraser les abeilles
-
-Brosse à abeilles
-
-Retirer délicatement les abeilles des cadres de miel
-
-4. Implantation du rucher (étape clé)
-4.1. Choix de l’emplacement
-
-Critères obligatoires :
-
-Soleil le matin
-
-Ombre partielle l’après-midi
-
-Zone calme
-
-Abri du vent
-
-Eau à proximité (<300 m)
-
-Fleurs toute l’année
-
-4.2. Installation physique
-
-Installer les supports
-
-Poser les ruches bien de niveau
-
-Orienter l’entrée vers l’est ou sud-est
-
-Incliner légèrement vers l’avant
-
-5. Installation de la colonie
-5.1. Types de colonies
-
-Essaim naturel capturé
-
-Essaim artificiel
-
-Paquet d’abeilles avec reine
-
-5.2. Installation pas à pas
-
-Placer le corps sur le plancher
-
-Insérer les cadres avec cire
-
-Introduire la colonie
-
-Refermer calmement
-
-Nourrir si nécessaire
-
-➡️ Ne pas ouvrir la ruche pendant 5 à 7 jours après installation.
-
-6. Comprendre ce que vous voyez dans la ruche
-6.1. Le couvain
-
-Œufs (1–3 jours)
-
-Larves (blanches, en forme de C)
-
-Cellules operculées
-
-➡️ Présence d’œufs = reine active
-
-6.2. Réserves
-
-Miel : cellules brillantes, operculées
-
-Pollen : cellules colorées
-
-7. Visites de routine (ce que fait un apiculteur)
-Fréquence
-
-Toutes les 2 à 3 semaines
-
-Ordre d’une visite
-
-Enfumer légèrement
-
-Retirer le toit
-
-Retirer le couvre-cadre
-
-Sortir un cadre de rive
-
-Inspecter chaque cadre
-
-Replacer dans le même ordre
-
-Points à vérifier
-
-Reine ou œufs
-
-Quantité de couvain
-
-Réserves
-
-Maladies visibles
-
-Construction des cadres
-
-8. Ajout des hausses (moment critique)
-Quand ajouter une hausse
-
-7 à 8 cadres du corps occupés
-
-Forte activité à l’entrée
-
-Comment
-
-Poser la grille à reine
-
-Ajouter la hausse avec cadres bâtis ou cirés
-
-Refermer
-
-9. Préparation à la récolte
-Conditions idéales
-
-Cadres operculés à 80 % minimum
-
-Temps sec
-
-Miellée terminée
-
-➡️ Ne jamais récolter le miel du corps.
-
-10. Récolte du miel (pas à pas)
-
-Enfumer légèrement
-
-Retirer les cadres de hausse
-
-Brosser les abeilles
-
-Placer les cadres dans une caisse fermée
-
-Transporter à l’abri
-
-11. Extraction du miel
-Désoperculation
-
-Retirer la cire avec un couteau
-
-Au-dessus d’un bac
-
-Extraction
-
-Placer les cadres dans l’extracteur
-
-Tourner progressivement
-
-Extraire les deux faces
-
-Filtration
-
-Filtrer le miel
-
-Laisser reposer 24–48 h
-
-12. Mise en pot et conservation
-Mise en pot
-
-Pots propres et secs
-
-Remplir sans bulles
-
-Fermer hermétiquement
-
-Conservation
-
-Endroit sec
-
-14–20 °C
-
-À l’abri de la lumière
-
-➡️ Le miel se conserve plusieurs années.
-
-13. Erreurs courantes du débutant
-
-Ouvrir trop souvent la ruche
-
-Récolter trop tôt
-
-Négliger l’eau
-
-Travailler sans fumée
-
-Écraser des abeilles inutilement
-
-14. Rendement réaliste
-
-1 ruche : 15 à 40 kg/an selon conditions
-
-La première année : rendement souvent plus faible
-
-Conclusion
-
-La réussite en apiculture repose sur :
-
-l’observation,
-
-la régularité,
-
-la patience,
-
-le respect du rythme des abeilles.
-
-Ce guide constitue une base complète et fiable pour démarrer et produire du miel avec des ruches Langstroth. */
