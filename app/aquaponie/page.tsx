@@ -219,7 +219,7 @@ export default function AquaponiePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-whith mb-20">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-whith mb-0">
       {/* Header Hero */}
       <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-emerald-600 text-white">
         <div className="absolute inset-0 bg-black opacity-10"></div>

@@ -32,6 +32,7 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Ecocircle from "./ecocircle";
 
 export default function Page() {
   const stats = [
@@ -452,6 +453,9 @@ export default function Page() {
             </Button>
           </div>
         </div>
+      </div>
+      <div>
+        <Ecocircle />
       </div>
     </div>
   );
