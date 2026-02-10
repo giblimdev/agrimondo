@@ -237,6 +237,12 @@ const sectionsData = [
               videoTitle="Approche 'revenu/production', organisation globale"
               description="Stratégies pour optimiser la production et les revenus"
             />
+            {/* Nouvelle vidéo ajoutée ici */}
+            <VideoCard
+              videoUrl="https://www.youtube.com/embed/MB1dujHKZak"
+              videoTitle="🍄 如何在家种植蘑菇：分步指南"
+              description="Guide étape par étape en chinois pour cultiver des champignons à la maison (débutant)"
+            />
           </div>
         </div>
       </>
@@ -477,6 +483,12 @@ const sectionsData = [
                 videoUrl="https://www.youtube.com/embed/9l10fUbNrzY"
                 videoTitle="Culture en seau"
                 description="Méthode de culture en seau étape par étape"
+              />
+              {/* Nouvelle vidéo ajoutée ici */}
+              <VideoCard
+                videoUrl="https://www.youtube.com/embed/CDBWBg3CoXY"
+                videoTitle="CULTIVO DE SETAS COMESTIBLES, taller completo GRATIS✅"
+                description="Atelier complet en espagnol sur la culture de champignons comestibles"
               />
             </div>
           </div>
