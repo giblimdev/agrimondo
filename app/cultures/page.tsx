@@ -71,7 +71,7 @@ export default function CulturePage() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
+    <div className="p-6 space-y-6 bg-slate-50 min-h-screen mb-30">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-slate-900">
           Cultures - Popayán
