@@ -3,6 +3,7 @@
 import React from "react";
 import Logo from "./Logo";
 import { MainNav } from "./MainNav";
+import UserMenu from "./UserMenu";
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
@@ -15,6 +16,9 @@ export default function Header() {
         {/* Desktop nav */}
         <div className="hidden md:block">
           <MainNav />
+        </div>
+        <div className="flex items-center gap-4">
+          <UserMenu />
         </div>
 
         {/* Mobile button */}

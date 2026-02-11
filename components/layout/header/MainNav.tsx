@@ -7,6 +7,7 @@ type NavItem = {
   label: string;
   href: string;
   children?: NavItem[];
+  visibleTo?: string;
 };
 
 const NAV: NavItem[] = [
@@ -20,6 +21,7 @@ const NAV: NavItem[] = [
       { label: "Hydroponie", href: "/cultures/hydroponie" },
       { label: "Micropousses", href: "/cultures/micropousses" },
     ],
+    visibleTo: "",
   },
   {
     label: "Champignon",
@@ -72,6 +74,11 @@ const NAV: NavItem[] = [
     label: "Réglementations",
     href: "/compliance",
     children: [{ label: "Guide", href: "/compliance" }],
+  },
+  {
+    label: "Admin",
+    href: "/admin",
+    children: [{ label: "Manifest", href: "/admin/manifest" }],
   },
 ];
 
