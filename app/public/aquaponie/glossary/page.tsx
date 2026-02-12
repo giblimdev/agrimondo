@@ -7,9 +7,9 @@ import {
   glossaryTermsAquaponie,
   categoriesAquaponie,
 } from "@/data/aquaponie/glossaryData";
-import GlossaryCard from "../../../components/GlossaryCard";
-import SearchBar from "../../../components/SearchBar";
-import AlphabetFilter from "../../../components/AlphabetFilter";
+import GlossaryCard from "../../../../components/GlossaryCard";
+import SearchBar from "../../../../components/SearchBar";
+import AlphabetFilter from "../../../../components/AlphabetFilter";
 
 export default function GlossaryPage() {
   const [searchTerm, setSearchTerm] = useState("");

@@ -3,9 +3,9 @@
 
 import { useState, useMemo } from "react";
 import { Search, Filter, Worm } from "lucide-react";
-import GlossaryCard from "../../../components/GlossaryCard";
-import SearchBar from "../../../components/SearchBar";
-import AlphabetFilter from "../../../components/AlphabetFilter";
+import GlossaryCard from "../../../../components/GlossaryCard";
+import SearchBar from "../../../../components/SearchBar";
+import AlphabetFilter from "../../../../components/AlphabetFilter";
 
 // ----- DONNÉES DU GLOSSAIRE BSF -----
 const categoriesBSF = [

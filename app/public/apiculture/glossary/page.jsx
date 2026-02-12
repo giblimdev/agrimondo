@@ -4,9 +4,9 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, Bug } from 'lucide-react';
 import { glossaryTerms, categories } from '@/data/apiculture/glossaryData';
-import GlossaryCard from '../../../components/GlossaryCard';
-import SearchBar from '../../../components/SearchBar';
-import AlphabetFilter from '../../../components/AlphabetFilter';
+import GlossaryCard from '../../../../components/GlossaryCard';
+import SearchBar from "../../../../components/SearchBar";
+import AlphabetFilter from '../../../../components/AlphabetFilter';
 
 export default function GlossaryPage() {
   const [searchTerm, setSearchTerm] = useState('');

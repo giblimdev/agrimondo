@@ -29,7 +29,7 @@ import {
   Package,
 } from "lucide-react";
 import LifeCycle from "./lifeCycle";
-import AlimentationGuide from "@/app/aviculture/elevage/alimentation/Alimentation";
+import AlimentationGuide from "../alimentation/Alimentation";
 
 export default function GuideElevagePage() {
   const CheckCircle = ({ className }: { className?: string }) => (

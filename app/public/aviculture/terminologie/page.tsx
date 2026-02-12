@@ -10,7 +10,7 @@ import {
   TermeTraduit,
   TableBDD,
   ChampBDD,
-} from "@/app/aviculture/terminologie/terminologieData";
+} from "./terminologieData";
 
 export default function TerminologiePage() {
   const [langueAffichage, setLangueAffichage] = useState<"fr" | "en" | "es">(
