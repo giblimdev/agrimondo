@@ -7,7 +7,7 @@
 "use client";
 
 import React from "react";
-import { ADMIN_PARAMS } from "@/app/aviculture/admin/settings/paramData";
+import { ADMIN_PARAMS } from "./paramData";
 
 // Un composant générique pour afficher un bloc de paramètres
 function ParamBlock({
