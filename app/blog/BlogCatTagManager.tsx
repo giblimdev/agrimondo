@@ -1,3 +1,8 @@
+// @/app/blog/BlogCatTagManager.tsx
+/*
+Auteur : [ajoute ton nom ici]
+*/
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -5,7 +10,9 @@ import { useRouter } from "next/navigation";
 import { getAllCategories, createCategory } from "@/lib/actions/category";
 import { getAllTags, createTag } from "@/lib/actions/tag";
 
-// Types simples basés sur ton schema Prisma
+// ----------------------
+// Types basés sur Prisma
+// ----------------------
 export type Category = {
   id: string;
   label: string;
@@ -20,19 +27,24 @@ export type Tag = {
   order: number;
 };
 
+// ----------------------
 // Props attendues
+// ----------------------
 type BlogCatTagManagerProps = {
   mode?: "categories" | "tags" | "both";
-  items?: Category[]; // utilisé si tu veux injecter une liste personnalisée
+  items?: Category[]; // liste personnalisée injectée
   userId?: string;
   editable?: boolean;
   onCategoryCreated?: () => void;
   onTagCreated?: () => void;
 };
 
+// ----------------------
+// Composant principal
+// ----------------------
 export default function BlogCatTagManager({
   mode = "both",
-  items = [],
+  items,
   userId,
   editable = true,
   onCategoryCreated,
@@ -45,20 +57,52 @@ export default function BlogCatTagManager({
   const [newCategory, setNewCategory] = useState("");
   const [newTag, setNewTag] = useState("");
 
+  // Sécurisation du paramètre items
+  const safeItems: Category[] = Array.isArray(items) ? items : [];
+
+  // ----------------------
+  // Chargement des données
+  // ----------------------
   useEffect(() => {
     async function loadData() {
+      // ---- Catégories ----
       if (mode === "categories" || mode === "both") {
-        const cats = await getAllCategories();
-        setCategories(cats);
+        try {
+          const res = await getAllCategories();
+          if (Array.isArray(res)) {
+            setCategories(res);
+          } else {
+            console.error("Format inattendu pour les catégories :", res);
+            setCategories([]);
+          }
+        } catch (err) {
+          console.error("Erreur lors du chargement des catégories :", err);
+          setCategories([]);
+        }
       }
+
+      // ---- Tags ----
       if (mode === "tags" || mode === "both") {
-        const tgs = await getAllTags();
-        setTags(tgs);
+        try {
+          const res = await getAllTags();
+          if (Array.isArray(res)) {
+            setTags(res);
+          } else {
+            console.error("Format inattendu pour les tags :", res);
+            setTags([]);
+          }
+        } catch (err) {
+          console.error("Erreur lors du chargement des tags :", err);
+          setTags([]);
+        }
       }
     }
+
     loadData();
   }, [mode]);
-
+  // ----------------------
+  // Gestion création
+  // ----------------------
   const handleAddCategory = async () => {
     if (!newCategory.trim()) return;
     await createCategory({ label: newCategory });
@@ -75,18 +119,23 @@ export default function BlogCatTagManager({
     router.refresh();
   };
 
+  // ----------------------
+  // Rendu
+  // ----------------------
   return (
     <div className="p-6 bg-white shadow rounded-lg space-y-8">
+      {/* Section Catégories */}
       {mode !== "tags" && (
         <section>
           <h3 className="text-lg font-semibold mb-2">Catégories</h3>
           <ul className="mb-3">
-            {(items.length ? items : categories).map((c) => (
+            {(safeItems.length ? safeItems : categories).map((c) => (
               <li key={c.id} className="text-gray-700">
                 {c.label} {c.img && <span className="text-sm">📷</span>}
               </li>
             ))}
           </ul>
+
           {editable && (
             <div className="flex gap-2">
               <input
@@ -107,6 +156,7 @@ export default function BlogCatTagManager({
         </section>
       )}
 
+      {/* Section Tags */}
       {mode !== "categories" && (
         <section>
           <h3 className="text-lg font-semibold mb-2">Tags</h3>
@@ -117,6 +167,7 @@ export default function BlogCatTagManager({
               </li>
             ))}
           </ul>
+
           {editable && (
             <div className="flex gap-2">
               <input
