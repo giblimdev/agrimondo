@@ -1,4 +1,4 @@
-// @/app/public/terminologie/page.tsx
+// @/app/public/aviculture/terminologie/page.tsx
 "use client";
 
 import GoHome from "@/components/common/GoHome";
