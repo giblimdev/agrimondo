@@ -196,7 +196,7 @@ export default function Page() {
                   asChild
                   className="bg-white text-emerald-700 hover:bg-emerald-50"
                 >
-                  <Link href="/user/blog">
+                  <Link href="/blog">
                     <BookOpen className="mr-2 h-4 w-4" />
                     Blog
                   </Link>
