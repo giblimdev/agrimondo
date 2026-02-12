@@ -430,7 +430,7 @@ export default async function BlogPage() {
           )
         ) : (
           <p className="text-gray-500">
-            <Link href="/login" className="text-blue-600 underline">
+            <Link href="/auth/signin" className="text-blue-600 underline">
               Connectez-vous
             </Link>{" "}
             pour voir vos articles.
@@ -440,26 +440,3 @@ export default async function BlogPage() {
     </div>
   );
 }
-/*
-## Error Type
-Runtime TypeError
-
-## Error Message
-(intermediate value)(intermediate value)(intermediate value).map is not a function
-
-
-    at BlogCatTagManager (file://C:/Users/jean-philippe/Desktop/agrimondo/.next/dev/static/chunks/_39ec6715._.js:2671:67)
-    at BlogPage (app\blog\page.tsx:312:11)
-
-## Code Frame
-  310 |         <h2 className="text-2xl font-bold mb-4">Mes catégories favorites</h2>
-  311 |         {userId ? (
-> 312 |           <BlogCatTagManager
-      |           ^
-  313 |             mode="categories"
-  314 |             items={favoriteCategories}
-  315 |             userId={userId}
-
-Next.js version: 16.1.4 (Turbopack)
-
-*/
