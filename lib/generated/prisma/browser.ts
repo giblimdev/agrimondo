@@ -18,12 +18,159 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
- * Model User
+ * Model Cmd
  * 
  */
+export type Cmd = Prisma.CmdModel
+/**
+ * Model Feature
+ * 
+ */
+export type Feature = Prisma.FeatureModel
+/**
+ * Model User
+ * ////////////////////////////////////////
+ * //   Authentification Better Auth  /////
+ * ////////////////////////////////////////
+ */
 export type User = Prisma.UserModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model Account
+ * 
+ */
+export type Account = Prisma.AccountModel
+/**
+ * Model Verification
+ * 
+ */
+export type Verification = Prisma.VerificationModel
+/**
+ * Model Profil
+ * 
+ */
+export type Profil = Prisma.ProfilModel
+/**
+ * Model Organization
+ * 
+ */
+export type Organization = Prisma.OrganizationModel
+/**
+ * Model Team
+ * 
+ */
+export type Team = Prisma.TeamModel
+/**
+ * Model CategoriesPost
+ * 
+ */
+export type CategoriesPost = Prisma.CategoriesPostModel
+/**
+ * Model TagBlog
+ * 
+ */
+export type TagBlog = Prisma.TagBlogModel
 /**
  * Model Post
  * 
  */
 export type Post = Prisma.PostModel
+/**
+ * Model Content
+ * 
+ */
+export type Content = Prisma.ContentModel
+/**
+ * Model Media
+ * 
+ */
+export type Media = Prisma.MediaModel
+/**
+ * Model Response
+ * 
+ */
+export type Response = Prisma.ResponseModel
+/**
+ * Model LikePost
+ * 
+ */
+export type LikePost = Prisma.LikePostModel
+/**
+ * Model PostCategory
+ * 
+ */
+export type PostCategory = Prisma.PostCategoryModel
+/**
+ * Model PostTag
+ * 
+ */
+export type PostTag = Prisma.PostTagModel
+/**
+ * Model Product
+ * 
+ */
+export type Product = Prisma.ProductModel
+/**
+ * Model Category
+ * 
+ */
+export type Category = Prisma.CategoryModel
+/**
+ * Model ProductTag
+ * 
+ */
+export type ProductTag = Prisma.ProductTagModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model ProductImage
+ * 
+ */
+export type ProductImage = Prisma.ProductImageModel
+/**
+ * Model Invoice
+ * 
+ */
+export type Invoice = Prisma.InvoiceModel
+/**
+ * Model InvoiceItem
+ * 
+ */
+export type InvoiceItem = Prisma.InvoiceItemModel
+/**
+ * Model Fidelity
+ * 
+ */
+export type Fidelity = Prisma.FidelityModel
+/**
+ * Model XpPoint
+ * 
+ */
+export type XpPoint = Prisma.XpPointModel
+/**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
+ * Model OrderItem
+ * 
+ */
+export type OrderItem = Prisma.OrderItemModel
+/**
+ * Model Address
+ * 
+ */
+export type Address = Prisma.AddressModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel

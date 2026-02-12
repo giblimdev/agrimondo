@@ -9,7 +9,128 @@
 * 🟢 You can import this file directly.
 */
 
+export const FeatureType = {
+  EPIC: 'EPIC',
+  FEATURE: 'FEATURE',
+  TASK: 'TASK',
+  BUG: 'BUG'
+} as const
+
+export type FeatureType = (typeof FeatureType)[keyof typeof FeatureType]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const FeatureStatus = {
+  BACKLOG: 'BACKLOG',
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type FeatureStatus = (typeof FeatureStatus)[keyof typeof FeatureStatus]
+
+
+export const FeaturePriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+} as const
+
+export type FeaturePriority = (typeof FeaturePriority)[keyof typeof FeaturePriority]
+
+
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  DEV: 'DEV',
+  VENDOR: 'VENDOR',
+  CLIENT: 'CLIENT',
+  USER: 'USER'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const ContentFormat = {
+  MARKDOWN: 'MARKDOWN',
+  HTML: 'HTML',
+  JSON: 'JSON',
+  TEXT: 'TEXT'
+} as const
+
+export type ContentFormat = (typeof ContentFormat)[keyof typeof ContentFormat]
+
+
+export const MediaType = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  CODE: 'CODE',
+  AUDIO: 'AUDIO',
+  DOCUMENT: 'DOCUMENT',
+  OTHER: 'OTHER'
+} as const
+
+export type MediaType = (typeof MediaType)[keyof typeof MediaType]
+
+
+export const InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
+  PARTIAL: 'PARTIAL',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+
+
+export const OrderStatus = {
+  DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  PROCESSING: 'PROCESSING',
+  READY: 'READY',
+  SHIPPED: 'SHIPPED',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const AddressType = {
+  BILLING: 'BILLING',
+  SHIPPING: 'SHIPPING',
+  BOTH: 'BOTH'
+} as const
+
+export type AddressType = (typeof AddressType)[keyof typeof AddressType]
+
+
+export const PaymentMethod = {
+  CASH: 'CASH',
+  CHECK: 'CHECK',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  CREDIT_CARD: 'CREDIT_CARD',
+  DEBIT_CARD: 'DEBIT_CARD',
+  PAYPAL: 'PAYPAL',
+  STRIPE: 'STRIPE',
+  OTHER: 'OTHER'
+} as const
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
