@@ -232,6 +232,7 @@ model Organization {
   updatedAt  DateTime @updatedAt // Date de dernière modification
 
   // Relations
+  createdBy  String
   teams      Team[] // Équipes de l'organisation
   clients    Profil[] // Clients de l'organisation
   products   Product[] // Produits vendus par l'organisation
@@ -255,6 +256,7 @@ model Team {
   organizationId String // Organisation à laquelle l'équipe appartient
   createdAt      DateTime @default(now()) // Date de création
   updatedAt      DateTime @updatedAt // Date de dernière modification
+  createdBy      String
 
   // Relations
   parentTeam   Team?        @relation("TeamHierarchy", fields: [parentTeamId], references: [id], onDelete: Cascade)

@@ -13,7 +13,7 @@ type NavItem = {
   parentId?: string | null;
   allowedRoles: Role[];
   isVisible: boolean;
-  children: NavItem[]; // toujours présent (même si vide)
+  children: NavItem[];
 };
 
 const NAV_FLAT: Omit<NavItem, "children">[] = [
@@ -393,12 +393,10 @@ const NAV_FLAT: Omit<NavItem, "children">[] = [
 function toTree(items: Omit<NavItem, "children">[]): NavItem[] {
   const map = new Map<string, NavItem>();
 
-  // 1) initialise nodes with children=[]
   for (const it of items) {
     map.set(it.id, { ...it, children: [] });
   }
 
-  // 2) attach to parent or become root
   const roots: NavItem[] = [];
   for (const it of items) {
     const node = map.get(it.id)!;
@@ -411,10 +409,9 @@ function toTree(items: Omit<NavItem, "children">[]): NavItem[] {
 
     const parent = map.get(parentId);
     if (parent) parent.children.push(node);
-    else roots.push(node); // fallback si parent manquant
+    else roots.push(node);
   }
 
-  // 3) sort by order recursively
   const sortRec = (nodes: NavItem[]) => {
     nodes.sort((a, b) => a.order - b.order);
     for (const n of nodes) sortRec(n.children);
@@ -430,8 +427,37 @@ function filterByRole(nodes: NavItem[], role: Role): NavItem[] {
     .map((n) => ({ ...n, children: filterByRole(n.children, role) }));
 }
 
-export function MainNav() {
-  // plus tard: remplacer par le rôle de la session
+function useClickOutside<T extends HTMLElement>(
+  onOutside: () => void,
+  enabled: boolean,
+) {
+  const ref = React.useRef<T | null>(null);
+
+  React.useEffect(() => {
+    if (!enabled) return;
+
+    const handler = (event: MouseEvent) => {
+      const el = ref.current;
+      if (!el) return;
+      if (event.target instanceof Node && !el.contains(event.target)) {
+        onOutside();
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [enabled, onOutside]);
+
+  return ref;
+}
+
+export function MainNav({
+  variant = "desktop",
+  onNavigate,
+}: {
+  variant?: "desktop" | "mobile";
+  onNavigate?: () => void;
+}) {
   const userRole: Role = "public";
 
   const NAV = React.useMemo(() => {
@@ -439,9 +465,31 @@ export function MainNav() {
     return filterByRole(tree, userRole);
   }, [userRole]);
 
+  // Desktop dropdown state
   const [openMenu, setOpenMenu] = React.useState<string | null>(null);
   const [isHoveringDropdown, setIsHoveringDropdown] = React.useState(false);
-  const closeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const closeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const closeAll = React.useCallback(() => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    setOpenMenu(null);
+    setIsHoveringDropdown(false);
+  }, []);
+
+  const containerRef = useClickOutside<HTMLElement>(
+    closeAll,
+    openMenu !== null,
+  );
+
+  React.useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeAll();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [closeAll]);
 
   const handleMouseEnterNav = (id: string) => {
     if (closeTimeoutRef.current) {
@@ -478,21 +526,115 @@ export function MainNav() {
 
   const handleClickNav = (id: string) => {
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    setOpenMenu(openMenu === id ? null : id);
+    setOpenMenu((cur) => (cur === id ? null : id));
   };
 
+  // Mobile accordion state
+  const [mobileOpenId, setMobileOpenId] = React.useState<string | null>(null);
+
+  if (variant === "mobile") {
+    return (
+      <nav aria-label="Navigation principale">
+        <ul className="flex flex-col gap-1">
+          {NAV.map((item) => {
+            const hasChildren = item.children.length > 0;
+            const isOpen = mobileOpenId === item.id;
+
+            if (!hasChildren) {
+              return (
+                <li key={item.id}>
+                  <Link
+                    href={item.href || "#"}
+                    className="block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-gray-100"
+                    onClick={() => onNavigate?.()}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            }
+
+            return (
+              <li key={item.id} className="rounded-md border border-gray-200">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium hover:bg-gray-50"
+                  aria-expanded={isOpen}
+                  onClick={() =>
+                    setMobileOpenId((cur) => (cur === item.id ? null : item.id))
+                  }
+                >
+                  <span>{item.label}</span>
+                  <span className="text-xs">{isOpen ? "▲" : "▼"}</span>
+                </button>
+
+                {isOpen ? (
+                  <div className="border-t bg-white">
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        onClick={() => onNavigate?.()}
+                      >
+                        Vue d&apos;ensemble
+                      </Link>
+                    ) : null}
+
+                    <div className="px-1 pb-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.id}
+                          href={child.href || "#"}
+                          className="block rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => onNavigate?.()}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    );
+  }
+
+  // Desktop:
+  // - Option A: flex-wrap (évite de sortir de l’écran) [web:16]
+  // - + fallback: overflow-x-auto + whitespace-nowrap pour scroll horizontal si nécessaire [web:32][web:31]
   return (
-    <nav className="relative">
-      <ul className="flex items-center space-x-4">
+    <nav
+      ref={containerRef}
+      className="relative max-w-full"
+      aria-label="Navigation principale"
+    >
+      <ul
+        className={[
+          "flex items-center",
+          "flex-wrap", // Option A
+          "gap-2 md:gap-1 lg:gap-2",
+          "max-w-full",
+          "overflow-x-auto", // fallback scroll
+          "whitespace-nowrap", // garde les libellés sur une ligne (avec scroll si besoin)
+          "py-1",
+        ].join(" ")}
+      >
         {NAV.map((item) => {
           const hasChildren = item.children.length > 0;
 
           if (!hasChildren) {
             return (
-              <li key={item.id}>
+              <li key={item.id} className="shrink-0">
                 <Link
                   href={item.href || "#"}
-                  className="rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="rounded-md px-2 py-2 md:px-2 lg:px-3 text-sm font-medium transition-colors hover:bg-gray-100"
+                  onClick={() => {
+                    closeAll();
+                    onNavigate?.();
+                  }}
                 >
                   {item.label}
                 </Link>
@@ -500,23 +642,25 @@ export function MainNav() {
             );
           }
 
+          const isOpen = openMenu === item.id;
+
           return (
             <li
               key={item.id}
-              className="relative"
+              className="relative shrink-0"
               onMouseEnter={() => handleMouseEnterNav(item.id)}
               onMouseLeave={handleMouseLeaveNav}
             >
               <button
-                className="flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex items-center rounded-md px-2 py-2 md:px-2 lg:px-3 text-sm font-medium transition-colors hover:bg-gray-100"
                 onClick={() => handleClickNav(item.id)}
-                aria-expanded={openMenu === item.id}
+                aria-expanded={isOpen}
                 type="button"
               >
                 {item.label}
                 <svg
                   className={`ml-1 h-4 w-4 transition-transform duration-200 ${
-                    openMenu === item.id ? "rotate-180" : ""
+                    isOpen ? "rotate-180" : ""
                   }`}
                   fill="none"
                   stroke="currentColor"
@@ -531,48 +675,50 @@ export function MainNav() {
                 </svg>
               </button>
 
-              {openMenu === item.id && (
+              {isOpen ? (
                 <div
                   className="absolute left-0 top-full z-50 pt-2"
                   onMouseEnter={handleMouseEnterDropdown}
                   onMouseLeave={handleMouseLeaveDropdown}
                 >
-                  <div className="absolute -top-2 left-0 right-0 h-2 bg-transparent" />
-
-                  <div className="min-w-[240px] animate-in slide-in-from-top-2 rounded-md border border-gray-200 bg-white shadow-lg duration-200 dark:border-gray-800 dark:bg-gray-900">
-                    <div className="p-4">
-                      {/* Lien principal */}
+                  <div className="min-w-[240px] rounded-md border border-gray-200 bg-white shadow-lg">
+                    <div className="p-3">
                       {item.href ? (
                         <Link
                           href={item.href}
-                          className="group mb-3 block rounded-lg border border-transparent p-3 transition-colors hover:border-gray-200 hover:bg-gray-100 dark:hover:border-gray-700 dark:hover:bg-gray-800"
-                          onClick={() => setOpenMenu(null)}
+                          className="group mb-2 block rounded-lg border border-transparent p-3 transition-colors hover:border-gray-200 hover:bg-gray-100"
+                          onClick={() => {
+                            closeAll();
+                            onNavigate?.();
+                          }}
                         >
-                          <div className="font-semibold text-gray-900 transition-colors group-hover:text-emerald-700 dark:text-gray-100 dark:group-hover:text-emerald-400">
+                          <div className="font-semibold text-gray-900 group-hover:text-emerald-700">
                             {item.label}
                           </div>
-                          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          <div className="mt-1 text-xs text-gray-500">
                             Vue d&apos;ensemble
                           </div>
                         </Link>
                       ) : (
-                        <div className="mb-3 rounded-lg bg-gray-50 p-3 text-sm font-semibold text-gray-800 dark:bg-gray-800 dark:text-gray-100">
+                        <div className="mb-2 rounded-lg bg-gray-50 p-3 text-sm font-semibold text-gray-800">
                           {item.label}
                         </div>
                       )}
 
-                      <div className="mb-3 h-px bg-gray-200 dark:bg-gray-800" />
+                      <div className="mb-2 h-px bg-gray-200" />
 
-                      {/* Sous-pages */}
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {item.children.map((child) => (
                           <Link
                             key={child.id}
                             href={child.href || "#"}
-                            className="group flex items-center rounded-md px-3 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                            onClick={() => setOpenMenu(null)}
+                            className="group flex items-center rounded-md px-3 py-2 text-sm transition-colors hover:bg-gray-100"
+                            onClick={() => {
+                              closeAll();
+                              onNavigate?.();
+                            }}
                           >
-                            <span className="text-gray-700 transition-all duration-200 group-hover:translate-x-1 group-hover:text-emerald-700 dark:text-gray-300 dark:group-hover:text-emerald-400">
+                            <span className="text-gray-700 transition-all duration-200 group-hover:translate-x-1 group-hover:text-emerald-700">
                               {child.label}
                             </span>
                             <svg
@@ -594,7 +740,7 @@ export function MainNav() {
                     </div>
                   </div>
                 </div>
-              )}
+              ) : null}
             </li>
           );
         })}

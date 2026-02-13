@@ -1,8 +1,17 @@
 // /app/blog/FormPost.tsx
 "use client";
 
+import { useState } from "react";
 import type { PostFormData } from "./AddPostModal";
 import CategoryTagSelector from "./CategoryTagSelector";
+
+// Type local pour les médias (correspond au schéma Prisma)
+type MediaType = "IMAGE" | "VIDEO" | "AUDIO" | "DOCUMENT" | "CODE" | "OTHER";
+type Media = {
+  caption?: string;
+  type: MediaType;
+  url: string;
+};
 
 interface FormPostProps {
   formData: PostFormData;
@@ -29,6 +38,14 @@ export function FormPost({
   success,
   userId,
 }: FormPostProps) {
+  // État pour la gestion de l'ajout de média dans un bloc
+  const [addingMediaForBlock, setAddingMediaForBlock] = useState<number | null>(
+    null,
+  );
+  const [newMediaUrl, setNewMediaUrl] = useState("");
+  const [newMediaType, setNewMediaType] = useState<MediaType>("IMAGE");
+  const [newMediaCaption, setNewMediaCaption] = useState("");
+
   // Mise à jour générique des champs
   const updateField = <K extends keyof PostFormData>(
     field: K,
@@ -62,6 +79,45 @@ export function FormPost({
       newContents[index] = { ...newContents[index], [field]: value };
       return { ...prev, contents: newContents };
     });
+  };
+
+  // Ajout d'un média à un bloc
+  const addMediaToBlock = (blockIndex: number) => {
+    if (!newMediaUrl.trim()) return;
+
+    const newMedia: Media = {
+      url: newMediaUrl,
+      type: newMediaType,
+      caption: newMediaCaption || undefined,
+    };
+
+    const currentMedias = formData.contents[blockIndex].medias || [];
+    updateContent(blockIndex, "medias", [...currentMedias, newMedia]);
+
+    // Réinitialiser le formulaire et fermer
+    setNewMediaUrl("");
+    setNewMediaType("IMAGE");
+    setNewMediaCaption("");
+    setAddingMediaForBlock(null);
+  };
+
+  // Suppression d'un média
+  const removeMediaFromBlock = (blockIndex: number, mediaIndex: number) => {
+    const currentMedias = formData.contents[blockIndex].medias || [];
+    const newMedias = currentMedias.filter((_, i) => i !== mediaIndex);
+    updateContent(blockIndex, "medias", newMedias);
+  };
+
+  // Gestion de l'upload de fichier
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewMediaUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -252,6 +308,7 @@ export function FormPost({
             + Ajouter un bloc
           </button>
         </div>
+
         {formData.contents.map((content, idx) => (
           <div key={idx} className="mb-4 p-4 border rounded-lg bg-gray-50">
             <div className="flex justify-between items-center mb-2">
@@ -266,6 +323,8 @@ export function FormPost({
                 </button>
               )}
             </div>
+
+            {/* Format du contenu */}
             <select
               value={content.format}
               onChange={(e) => updateContent(idx, "format", e.target.value)}
@@ -276,6 +335,8 @@ export function FormPost({
               <option value="JSON">JSON</option>
               <option value="TEXT">Texte</option>
             </select>
+
+            {/* Zone de texte pour le contenu */}
             <textarea
               value={content.content}
               onChange={(e) => updateContent(idx, "content", e.target.value)}
@@ -283,19 +344,130 @@ export function FormPost({
               className="w-full px-4 py-2 border rounded-lg font-mono text-sm"
               placeholder="Contenu..."
             />
-            <div className="mt-2">
-              <label className="text-xs text-gray-500">Médias (JSON)</label>
-              <input
-                type="text"
-                value={content.medias ? JSON.stringify(content.medias) : ""}
-                onChange={(e) => {
-                  try {
-                    updateContent(idx, "medias", JSON.parse(e.target.value));
-                  } catch {}
-                }}
-                className="w-full px-3 py-1.5 border rounded-md text-sm"
-                placeholder='[{"type":"IMAGE","url":"..."}]'
-              />
+
+            {/* Section Médias */}
+            <div className="mt-3">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-medium text-gray-500">
+                  Médias
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setAddingMediaForBlock(idx)}
+                  className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                >
+                  + Ajouter un média
+                </button>
+              </div>
+
+              {/* Liste des médias existants */}
+              {content.medias && content.medias.length > 0 && (
+                <ul className="space-y-1 mb-3">
+                  {content.medias.map((media, mediaIdx) => (
+                    <li
+                      key={mediaIdx}
+                      className="flex items-center gap-2 text-sm bg-white p-2 rounded border"
+                    >
+                      <span className="font-mono text-xs bg-gray-200 px-1.5 py-0.5 rounded">
+                        {media.type}
+                      </span>
+                      <a
+                        href={media.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="truncate flex-1 text-blue-600 underline text-xs"
+                      >
+                        {media.url.length > 40
+                          ? media.url.substring(0, 40) + "…"
+                          : media.url}
+                      </a>
+                      {media.caption && (
+                        <span className="text-gray-600 text-xs truncate max-w-37.5">
+                          ({media.caption})
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeMediaFromBlock(idx, mediaIdx)}
+                        className="text-red-600 text-xs hover:underline"
+                      >
+                        Supprimer
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Formulaire d'ajout de média (affiché uniquement pour le bloc concerné) */}
+              {addingMediaForBlock === idx && (
+                <div className="bg-white p-3 rounded border space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={newMediaUrl}
+                      onChange={(e) => setNewMediaUrl(e.target.value)}
+                      placeholder="URL du média"
+                      className="flex-1 px-3 py-1.5 border rounded-md text-sm"
+                    />
+                    <select
+                      value={newMediaType}
+                      onChange={(e) =>
+                        setNewMediaType(e.target.value as MediaType)
+                      }
+                      className="px-2 py-1.5 border rounded-md text-sm"
+                    >
+                      <option value="IMAGE">Image</option>
+                      <option value="VIDEO">Vidéo</option>
+                      <option value="AUDIO">Audio</option>
+                      <option value="DOCUMENT">Document</option>
+                      <option value="CODE">Code</option>
+                      <option value="OTHER">Autre</option>
+                    </select>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newMediaCaption}
+                      onChange={(e) => setNewMediaCaption(e.target.value)}
+                      placeholder="Légende (optionnelle)"
+                      className="flex-1 px-3 py-1.5 border rounded-md text-sm"
+                    />
+                    <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-md text-sm">
+                      📁 Upload
+                      <input
+                        type="file"
+                        accept="image/*,video/*,audio/*,application/pdf,text/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddingMediaForBlock(null);
+                        setNewMediaUrl("");
+                        setNewMediaType("IMAGE");
+                        setNewMediaCaption("");
+                      }}
+                      className="text-sm text-gray-600 hover:text-gray-800 px-3 py-1"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addMediaToBlock(idx)}
+                      disabled={!newMediaUrl.trim()}
+                      className="text-sm bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}

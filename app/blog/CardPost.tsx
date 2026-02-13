@@ -9,6 +9,7 @@ import type {
   CategoriesPost,
   TagBlog,
 } from "@/lib/generated/prisma/client";
+import { Button } from "@/components/ui/button";
 
 type PostWithRelations = Post & {
   user?: Pick<User, "name" | "image"> | null;
@@ -163,7 +164,13 @@ export function CardPost({
                 👁️ {post.PostView}
               </span>
             </div>
-
+            <div>
+              <Link href={`/blog/${slug}`}>
+                <Button size="sm" variant="outline">
+                  Lire l'article
+                </Button>
+              </Link>
+            </div>
             {showEditDelete && (
               <div className="flex gap-2">
                 <Link

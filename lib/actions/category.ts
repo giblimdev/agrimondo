@@ -1,8 +1,3 @@
-//@/lib/actions/category.ts
-/*
-affiche le nom du fichier en commentaire 
-
-*/
 "use server";
 
 import prisma from "@/lib/prisma";
@@ -22,10 +17,10 @@ export async function getAllCategories() {
       orderBy: { order: "asc" },
     });
     console.log(`✅ Found ${categories.length} categories`);
-    return { success: true, data: categories };
+    return categories; // Retourne directement le tableau
   } catch (error) {
     console.error("❌ Error fetching categories:", error);
-    return { success: false, error: "Failed to fetch categories" };
+    return []; // En cas d'erreur, retourne un tableau vide
   }
 }
 

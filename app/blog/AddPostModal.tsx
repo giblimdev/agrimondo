@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { FormPost } from "./FormPost";
 import PostPreview from "./PostPreview";
 import { createPost, updatePost } from "@/lib/actions/posts";
-import type { Post } from "@/lib/generated/prisma/client";
 
 // Types pour l'état du formulaire
 export type PostFormData = {
@@ -61,21 +60,21 @@ function generateSlug(title: string): string {
 
 interface AddPostModalProps {
   userId: string;
-  initialData?: Post & {
-    contents?: PostFormData["contents"];
-    postCategories?: { categoryId: string }[];
-    postTags?: { tagId: string }[];
-  };
+  initialData?: PostFormData; // 👈 changement ici
   onSuccess?: () => void;
+  defaultOpen?: boolean; // Ouvre la modale automatiquement au montage
+  hideButton?: boolean; // Cache le bouton d'ouverture
 }
 
 export default function AddPostModal({
   userId,
   initialData,
   onSuccess,
+  defaultOpen = false,
+  hideButton = false,
 }: AddPostModalProps) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -85,26 +84,7 @@ export default function AddPostModal({
   // ------------------------------------------------------------
   const [formData, setFormData] = useState<PostFormData>(() => {
     if (initialData) {
-      return {
-        id: initialData.id,
-        title: initialData.title || "",
-        slug: initialData.slug || "",
-        description: initialData.description || "",
-        img: initialData.img || "",
-        order: initialData.order || 0,
-        status: (initialData.status as "DRAFT" | "PUBLISHED") || "DRAFT",
-        isSponsored: initialData.isSponsored || false,
-        isFeatured: initialData.isFeatured || false,
-        metaTitle: initialData.metaTitle || "",
-        metaDescription: initialData.metaDescription || "",
-        canonicalUrl: initialData.canonicalUrl || "",
-        contents: initialData.contents?.length
-          ? initialData.contents
-          : [{ content: "", format: "MARKDOWN" }],
-        categoryIds:
-          initialData.postCategories?.map((pc) => pc.categoryId) || [],
-        tagIds: initialData.postTags?.map((pt) => pt.tagId) || [],
-      };
+      return initialData; // directement, car c'est déjà au bon format
     }
     return defaultFormData;
   });
@@ -201,34 +181,40 @@ export default function AddPostModal({
     };
   }, [isOpen]);
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
-      {/* Bouton d'ouverture */}
-      <button
-        id="add-post-button"
-        onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-sm hover:shadow-md"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
+      {/* Bouton d'ouverture (caché si demandé) */}
+      {!hideButton && (
+        <button
+          id="add-post-button"
+          onClick={() => setIsOpen(true)}
+          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-sm hover:shadow-md"
         >
-          <path
-            fillRule="evenodd"
-            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-            clipRule="evenodd"
-          />
-        </svg>
-        Ajouter un article
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              clipRule="evenodd"
+            />
+          </svg>
+          {initialData ? "Modifier l'article" : "Ajouter un article"}
+        </button>
+      )}
 
       {/* Modale */}
       {isOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-all"
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
         >
           <div
             className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col"
@@ -240,7 +226,7 @@ export default function AddPostModal({
                 ✍️ {initialData ? "Modifier l'article" : "Nouvel article"}
               </h3>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="text-gray-400 hover:text-gray-600 transition rounded-full p-1 hover:bg-gray-200"
                 aria-label="Fermer"
               >
