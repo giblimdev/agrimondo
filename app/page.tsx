@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image"; // Import ajouté
 
 import {
   Card,
@@ -168,10 +169,22 @@ export default function Page() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       {/* Hero */}
-      <div className="relative bg-gradient-to-r from-emerald-600 to-green-700 py-12 text-white">
-        <div className="mx-auto max-w-7xl px-4">
+      <div className="relative bg-linear-to-r from-emerald-300 to-green-900 py-12 text-white">
+        {/* Image de fond avec padding */}
+        <div className="absolute inset-0 p-10">
+          <div className="relative h-full w-full">
+            <Image
+              src="/agrimondoHero.png"
+              alt="Ferme Hacienda Esmeralda"
+              fill
+              className="object-cover opacity-80"
+            />
+          </div>
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
               <Leaf className="h-6 w-6" />
@@ -190,7 +203,7 @@ export default function Page() {
                 transformation pour une autonomie alimentaire optimale.
               </p>
 
-              {/* BLOG CTA (intégration propre) */}
+              {/* BLOG CTA */}
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Button
                   asChild
@@ -371,7 +384,7 @@ export default function Page() {
         </div>
 
         {/* Knowledge */}
-        <div className="mb-12 rounded-2xl bg-gradient-to-r from-emerald-50 to-green-50 p-8">
+        <div className="mb-12 rounded-2xl bg-linear-to-r from-emerald-50 to-green-50 p-8">
           <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
             <div className="flex-1">
               <div className="mb-4 flex items-center gap-3">
