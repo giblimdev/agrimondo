@@ -1,269 +1,50 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import {
-  Menu,
-  ChevronDown,
-  Home,
-  Sprout,
-  Droplets,
-  Bird,
-  Bug,
-  UtensilsCrossed,
-  FileText,
-  Briefcase,
-  Code,
-  Shield,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import Logo from "./Logo";
+import  MainNav  from "./MainNav";
 import UserMenu from "./UserMenu";
-import { buildNavTree } from "./navUtils";
-import { NAV_FLAT } from "./MainNaveData";
 
-type Role = "public" | "user" | "client" | "pro" | "dev" | "admin";
-
-type NavItem = {
-  id: string;
-  label: string;
-  href?: string | null;
-  order: number;
-  parentId?: string | null;
-  allowedRoles: Role[];
-  isVisible: boolean;
-  children: NavItem[];
-};
-
-interface HeaderProps {
-  userRole?: Role;
-}
-
-// Icônes pour chaque section
-const getIcon = (id: string, size = "w-4 h-4") => {
-  const icons: Record<string, React.ReactNode> = {
-    home: <Home className={size} />,
-    cultures: <Sprout className={size} />,
-    myco: <Sprout className={size} />,
-    aqua: <Droplets className={size} />,
-    api: <Bug className={size} />,
-    avi: <Bird className={size} />,
-    bsf: <Bug className={size} />,
-    recettes: <UtensilsCrossed className={size} />,
-    compliance: <FileText className={size} />,
-    pro: <Briefcase className={size} />,
-    dev: <Code className={size} />,
-    admin: <Shield className={size} />,
-  };
-  return icons[id] || <Sprout className={size} />;
-};
-
-// Couleurs pour chaque section
-const getColorClass = (id: string) => {
-  const colors: Record<string, string> = {
-    cultures: "hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950",
-    myco: "hover:bg-purple-50 hover:text-purple-700 dark:hover:bg-purple-950",
-    aqua: "hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-950",
-    api: "hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-950",
-    avi: "hover:bg-cyan-50 hover:text-cyan-700 dark:hover:bg-cyan-950",
-    bsf: "hover:bg-orange-50 hover:text-orange-700 dark:hover:bg-orange-950",
-    recettes: "hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950",
-    compliance:
-      "hover:bg-slate-50 hover:text-slate-700 dark:hover:bg-slate-950",
-    pro: "hover:bg-indigo-50 hover:text-indigo-700 dark:hover:bg-indigo-950",
-    dev: "hover:bg-teal-50 hover:text-teal-700 dark:hover:bg-teal-950",
-    admin: "hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950",
-  };
-  return colors[id] || "hover:bg-gray-50 hover:text-gray-700";
-};
-
-export default function Header({ userRole = "public" }: HeaderProps) {
+export default function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [openSubmenu, setOpenSubmenu] = React.useState<string | null>(null);
-
-  // Construire l'arbre de navigation
-  const navTree = React.useMemo(() => buildNavTree(NAV_FLAT), []);
-
-  // Filtrer les items selon le rôle
-  const visibleItems = React.useMemo(
-    () =>
-      navTree.filter(
-        (item) =>
-          item.isVisible &&
-          item.allowedRoles.includes(userRole) &&
-          !item.parentId,
-      ),
-    [navTree, userRole],
-  );
 
   return (
-    <header className="w-full border-b bg-white/95 backdrop-blur-sm dark:bg-gray-950/95 sticky top-0 z-50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+    <header className="w-full border-b bg-white">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
         <Logo />
 
-        {/* Navigation Desktop */}
-        <nav className="hidden md:flex flex-1 justify-center">
-          <NavigationMenu>
-            <NavigationMenuList>
-              {visibleItems.map((item) => {
-                const hasChildren = item.children && item.children.length > 0;
-
-                if (!hasChildren && item.href) {
-                  return (
-                    <NavigationMenuItem key={item.id}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "group inline-flex h-9 w-max items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                          getColorClass(item.id),
-                        )}
-                      >
-                        <span className="mr-2">{getIcon(item.id)}</span>
-                        {item.label}
-                      </Link>
-                    </NavigationMenuItem>
-                  );
-                }
-
-                return (
-                  <NavigationMenuItem key={item.id}>
-                    <NavigationMenuTrigger
-                      className={cn(
-                        "h-9 px-3 py-2 text-sm font-medium",
-                        getColorClass(item.id),
-                      )}
-                    >
-                      <span className="mr-2">{getIcon(item.id)}</span>
-                      {item.label}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                        {item.children.map((child) => (
-                          <li key={child.id}>
-                            <Link
-                              href={child.href || "#"}
-                              className={cn(
-                                "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
-                                getColorClass(item.id),
-                              )}
-                            >
-                              <div className="text-sm font-medium leading-none">
-                                {child.label}
-                              </div>
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                );
-              })}
-            </NavigationMenuList>
-          </NavigationMenu>
-        </nav>
+        {/* Desktop nav */}
+        <div className="hidden md:block">
+          <MainNav variant="desktop" onNavigate={() => {}} />
+        </div>
 
         <div className="flex items-center gap-3">
           <UserMenu />
 
-          {/* Menu Mobile */}
-          <div className="md:hidden">
-            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Ouvrir le menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-80 overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center space-x-2">
-                    <Sprout className="w-5 h-5 text-green-600" />
-                    <span>Navigation</span>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="mt-8 space-y-2">
-                  {visibleItems.map((item) => {
-                    const hasChildren =
-                      item.children && item.children.length > 0;
-                    const isOpen = openSubmenu === item.id;
-
-                    if (!hasChildren && item.href) {
-                      return (
-                        <Link
-                          key={item.id}
-                          href={item.href}
-                          onClick={() => setMobileOpen(false)}
-                          className={cn(
-                            "flex items-center space-x-3 rounded-lg px-4 py-3 transition-colors",
-                            getColorClass(item.id),
-                          )}
-                        >
-                          {getIcon(item.id, "w-5 h-5")}
-                          <span className="font-medium">{item.label}</span>
-                        </Link>
-                      );
-                    }
-
-                    return (
-                      <div key={item.id} className="space-y-1">
-                        <button
-                          onClick={() =>
-                            setOpenSubmenu(isOpen ? null : item.id)
-                          }
-                          className={cn(
-                            "flex w-full items-center justify-between rounded-lg px-4 py-3 transition-colors",
-                            getColorClass(item.id),
-                          )}
-                        >
-                          <div className="flex items-center space-x-3">
-                            {getIcon(item.id, "w-5 h-5")}
-                            <span className="font-medium">{item.label}</span>
-                          </div>
-                          <ChevronDown
-                            className={cn(
-                              "h-4 w-4 transition-transform",
-                              isOpen && "rotate-180",
-                            )}
-                          />
-                        </button>
-                        {isOpen && (
-                          <div className="ml-8 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4">
-                            {item.children.map((child) => (
-                              <Link
-                                key={child.id}
-                                href={child.href || "#"}
-                                onClick={() => setMobileOpen(false)}
-                                className="block rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                              >
-                                {child.label}
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+          {/* Mobile button */}
+          <button
+            type="button"
+            className="md:hidden inline-flex items-center justify-center rounded border px-3 py-2 text-sm"
+            aria-label="Ouvrir le menu"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            ☰
+          </button>
         </div>
       </div>
+
+      {/* Mobile nav panel */}
+      {mobileOpen ? (
+        <div className="md:hidden border-t px-4 py-3">
+          <MainNav
+            variant="mobile"
+            onNavigate={() => {
+              setMobileOpen(false);
+            }}
+          />
+        </div>
+      ) : null}
     </header>
   );
 }

@@ -1,5 +1,5 @@
-//@/copmponents/layout/header/MAinNavData.ts
-type Role = "public" | "user" | "client" | "pro" | "dev" | "admin";
+//@/copmponents/layout/header/MainNavData.ts
+export type Role = "public" | "user" | "client" | "pro" | "dev" | "admin";
 
 export type NavItem = {
   id: string;
