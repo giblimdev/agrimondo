@@ -19,6 +19,7 @@ export default function LangstrothPlanPage() {
   const [activeSection, setActiveSection] = useState("plan");
   const [zoom, setZoom] = useState(1);
 
+  // Composants avec dimensions réelles (en mm)
   const rucheComponents = [
     {
       id: 1,
@@ -112,7 +113,7 @@ export default function LangstrothPlanPage() {
       exterieur: {
         longueur: "500 mm",
         largeur: "410 mm",
-        hauteurTotale: "~850 mm",
+        hauteurTotale: "~850 mm (sans socle)",
       },
       interieur: {
         longueur: "456 mm",
@@ -195,11 +196,26 @@ export default function LangstrothPlanPage() {
     },
   ];
 
+  // Calcul des hauteurs proportionnelles (en mm)
+  const heights = {
+    toit: 85,
+    couvreCadres: 15,
+    hausse: 240,
+    corps: 240,
+    plancher: 22,
+    socle: 300, // valeur indicative, peut être ajustée
+  };
+  const totalHeight = Object.values(heights).reduce((a, b) => a + b, 0); // 902 mm
+
+  // Échelle pour le rendu : hauteur max en pixels souhaitée
+  const diagramHeight = 600; // px
+
   const renderRucheDiagram = () => (
     <div className="relative bg-gradient-to-b from-amber-50 to-white p-8 rounded-2xl border-2 border-amber-200">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-bold text-gray-800">
-          Diagramme Technique - Ruche Langstroth 10 Cadres
+          Diagramme Technique - Ruche Langstroth 10 Cadres (échelle
+          proportionnelle)
         </h3>
         <div className="flex gap-2">
           <button
@@ -218,85 +234,76 @@ export default function LangstrothPlanPage() {
       </div>
 
       <div
-        className="relative mx-auto"
+        className="relative mx-auto border border-gray-300 rounded-lg overflow-hidden"
         style={{
           maxWidth: "800px",
+          height: `${diagramHeight}px`,
           transform: `scale(${zoom})`,
           transformOrigin: "top center",
         }}
       >
-        {/* Socle */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-96 h-6 bg-gray-800 rounded-t-lg"></div>
-
-        {/* Plancher */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-80 h-4 bg-amber-800 border-2 border-amber-900">
-          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-16 h-2 bg-amber-700 rounded-t"></div>
+        {/* Conteneur flex column avec hauteurs proportionnelles */}
+        <div className="flex flex-col h-full w-full">
+          {/* Socle */}
+          <div
+            className="w-full bg-gray-800 flex items-center justify-center text-white text-xs"
+            style={{ height: `${(heights.socle / totalHeight) * 100}%` }}
+          >
+            Socle (300-400 mm)
+          </div>
+          {/* Plancher */}
+          <div
+            className="w-full bg-amber-800 border-t-2 border-b-2 border-amber-900 flex items-center justify-center text-white text-xs"
+            style={{ height: `${(heights.plancher / totalHeight) * 100}%` }}
+          >
+            Plancher (22 mm)
+          </div>
+          {/* Corps */}
+          <div
+            className="w-full bg-amber-100 border-t-2 border-b-2 border-amber-600 flex items-center justify-center text-amber-800 text-xs font-bold"
+            style={{ height: `${(heights.corps / totalHeight) * 100}%` }}
+          >
+            Corps (240 mm)
+          </div>
+          {/* Hausse */}
+          <div
+            className="w-full bg-amber-50 border-t-2 border-b-2 border-amber-500 flex items-center justify-center text-amber-700 text-xs font-bold"
+            style={{ height: `${(heights.hausse / totalHeight) * 100}%` }}
+          >
+            Hausse (240 mm)
+          </div>
+          {/* Couvre-cadres */}
+          <div
+            className="w-full bg-gray-300 border-t-2 border-b-2 border-gray-400 flex items-center justify-center text-gray-700 text-xs"
+            style={{ height: `${(heights.couvreCadres / totalHeight) * 100}%` }}
+          >
+            Couvre-cadres (15 mm)
+          </div>
+          {/* Toit */}
+          <div
+            className="w-full bg-gray-700 border-t-2 border-gray-800 flex items-center justify-center text-white text-xs"
+            style={{ height: `${(heights.toit / totalHeight) * 100}%` }}
+          >
+            Toit (85 mm)
+          </div>
         </div>
 
-        {/* Corps */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-72 h-48 bg-amber-100 border-2 border-amber-600">
-          <div className="absolute inset-2 border border-amber-400 grid grid-cols-2 gap-1 p-1">
-            {[...Array(10)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-amber-50 border border-amber-300"
-              ></div>
-            ))}
-          </div>
-          <div className="absolute top-2 left-2 text-xs font-bold text-amber-800">
-            CORPS
-            <br />
-            240 mm
-          </div>
-        </div>
-
-        {/* Hausse */}
-        <div className="absolute bottom-58 left-1/2 transform -translate-x-1/2 w-72 h-40 bg-amber-50 border-2 border-amber-500">
-          <div className="absolute inset-2 border border-amber-300 grid grid-cols-2 gap-1 p-1">
-            {[...Array(10)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-amber-100 border border-amber-200"
-              ></div>
-            ))}
-          </div>
-          <div className="absolute top-2 left-2 text-xs font-bold text-amber-700">
-            HAUSSE
-            <br />
-            240 mm
-          </div>
-        </div>
-
-        {/* Couvre-cadres */}
-        <div className="absolute bottom-98 left-1/2 transform -translate-x-1/2 w-76 h-4 bg-gray-300"></div>
-
-        {/* Toit */}
-        <div className="absolute bottom-102 left-1/2 transform -translate-x-1/2 w-84 h-10 bg-gray-700 rounded-t-lg">
-          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-80 h-2 bg-gray-800"></div>
-        </div>
-
-        {/* Échelle dimensionnelle */}
-        <div className="absolute -left-20 bottom-0 h-64 border-l-2 border-gray-400 flex flex-col justify-between">
-          <div className="absolute -left-8 top-0 text-sm text-gray-600">
-            850 mm
-          </div>
-          <div className="absolute -left-8 top-48 text-sm text-gray-600">
-            500 mm
-          </div>
-          <div className="absolute -left-8 top-58 text-sm text-gray-600">
-            240 mm
-          </div>
-          <div className="absolute -left-8 top-98 text-sm text-gray-600">
-            85 mm
-          </div>
+        {/* Repère d'échelle verticale */}
+        <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-gray-400 opacity-50"></div>
+        <div className="absolute left-6 top-2 text-xs text-gray-600">
+          {totalHeight} mm (total)
         </div>
       </div>
 
       {/* Légende */}
-      <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-gray-700 rounded"></div>
           <span className="text-sm">Toit</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-gray-300 rounded"></div>
+          <span className="text-sm">Couvre-cadres</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-amber-50 border border-amber-500"></div>
@@ -309,6 +316,10 @@ export default function LangstrothPlanPage() {
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-amber-800"></div>
           <span className="text-sm">Plancher</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 bg-gray-800"></div>
+          <span className="text-sm">Socle</span>
         </div>
       </div>
     </div>
@@ -329,12 +340,13 @@ export default function LangstrothPlanPage() {
               </p>
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
-              <button className="flex items-center gap-2 px-4 py-2 bg-white text-amber-700 rounded-lg hover:bg-amber-50">
+              <Link
+                href="/apiculture/2019-ruche_langstroth.pdf"
+                className="flex items-center gap-2 px-4 py-2 bg-white text-amber-700 rounded-lg hover:bg-amber-50"
+              >
                 <Download className="w-4 h-4" />
-                <Link href="/apiculture/2019-ruche_langstroth.pdf">
-                  Télécharger PDF
-                </Link>
-              </button>
+                Télécharger PDF
+              </Link>
               <button className="flex items-center gap-2 px-4 py-2 bg-amber-800 text-white rounded-lg hover:bg-amber-700">
                 <Printer className="w-4 h-4" />
                 Imprimer
@@ -626,9 +638,9 @@ export default function LangstrothPlanPage() {
                       <tr>
                         <th className="px-6 py-3">Type de hausse</th>
                         <th className="px-6 py-3">Hauteur (mm)</th>
-                        <th className="px6 py-3">Cadres</th>
-                        <th className="px6 py-3">Poids plein (kg)</th>
-                        <th className="px6 py-3">Utilisation</th>
+                        <th className="px-6 py-3">Cadres</th>
+                        <th className="px-6 py-3">Poids plein (kg)</th>
+                        <th className="px-6 py-3">Utilisation</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -636,33 +648,33 @@ export default function LangstrothPlanPage() {
                         <td className="px-6 py-4 font-medium">
                           Corps standard
                         </td>
-                        <td className="px6 py-4">240</td>
-                        <td className="px6 py-4">10</td>
-                        <td className="px6 py-4">25-30</td>
-                        <td className="px6 py-4">Couvain</td>
+                        <td className="px-6 py-4">240</td>
+                        <td className="px-6 py-4">10</td>
+                        <td className="px-6 py-4">25-30</td>
+                        <td className="px-6 py-4">Couvain</td>
                       </tr>
                       <tr className="bg-white border-b hover:bg-amber-50">
                         <td className="px-6 py-4 font-medium">
                           Hausse complète
                         </td>
-                        <td className="px6 py-4">240</td>
-                        <td className="px6 py-4">10</td>
-                        <td className="px6 py-4">15-20</td>
-                        <td className="px6 py-4">Production miel</td>
+                        <td className="px-6 py-4">240</td>
+                        <td className="px-6 py-4">10</td>
+                        <td className="px-6 py-4">15-20</td>
+                        <td className="px-6 py-4">Production miel</td>
                       </tr>
                       <tr className="bg-white border-b hover:bg-amber-50">
                         <td className="px-6 py-4 font-medium">Hausse 3/4</td>
-                        <td className="px6 py-4">185</td>
-                        <td className="px6 py-4">10</td>
-                        <td className="px6 py-4">12-15</td>
-                        <td className="px6 py-4">Miel léger</td>
+                        <td className="px-6 py-4">185</td>
+                        <td className="px-6 py-4">10</td>
+                        <td className="px-6 py-4">12-15</td>
+                        <td className="px-6 py-4">Miel léger</td>
                       </tr>
                       <tr className="bg-white hover:bg-amber-50">
                         <td className="px-6 py-4 font-medium">Hausse 1/2</td>
-                        <td className="px6 py-4">145</td>
-                        <td className="px6 py-4">10</td>
-                        <td className="px6 py-4">8-12</td>
-                        <td className="px6 py-4">Débutants/seniors</td>
+                        <td className="px-6 py-4">145</td>
+                        <td className="px-6 py-4">10</td>
+                        <td className="px-6 py-4">8-12</td>
+                        <td className="px-6 py-4">Débutants/seniors</td>
                       </tr>
                     </tbody>
                   </table>
@@ -796,9 +808,9 @@ export default function LangstrothPlanPage() {
                     <thead className="text-xs text-gray-700 uppercase bg-amber-50">
                       <tr>
                         <th className="px-6 py-3">Critère</th>
-                        <th className="px6 py-3">Langstroth</th>
-                        <th className="px6 py-3">Dadant</th>
-                        <th className="px6 py-3">Warré</th>
+                        <th className="px-6 py-3">Langstroth</th>
+                        <th className="px-6 py-3">Dadant</th>
+                        <th className="px-6 py-3">Warré</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -806,29 +818,29 @@ export default function LangstrothPlanPage() {
                         <td className="px-6 py-4 font-medium">
                           Poids hausse pleine
                         </td>
-                        <td className="px6 py-4">15-20 kg</td>
-                        <td className="px6 py-4">25-30 kg</td>
-                        <td className="px6 py-4">8-12 kg</td>
+                        <td className="px-6 py-4">15-20 kg</td>
+                        <td className="px-6 py-4">25-30 kg</td>
+                        <td className="px-6 py-4">8-12 kg</td>
                       </tr>
                       <tr className="bg-white border-b">
                         <td className="px-6 py-4 font-medium">
                           Standardisation
                         </td>
-                        <td className="px6 py-4">Internationale</td>
-                        <td className="px6 py-4">Française</td>
-                        <td className="px6 py-4">Variable</td>
+                        <td className="px-6 py-4">Internationale</td>
+                        <td className="px-6 py-4">Française</td>
+                        <td className="px-6 py-4">Variable</td>
                       </tr>
                       <tr className="bg-white border-b">
                         <td className="px-6 py-4 font-medium">Complexité</td>
-                        <td className="px6 py-4">Modérée</td>
-                        <td className="px6 py-4">Élevée</td>
-                        <td className="px6 py-4">Faible</td>
+                        <td className="px-6 py-4">Modérée</td>
+                        <td className="px-6 py-4">Élevée</td>
+                        <td className="px-6 py-4">Faible</td>
                       </tr>
                       <tr className="bg-white">
                         <td className="px-6 py-4 font-medium">Productivité</td>
-                        <td className="px6 py-4">Élevée</td>
-                        <td className="px6 py-4">Très élevée</td>
-                        <td className="px6 py-4">Modérée</td>
+                        <td className="px-6 py-4">Élevée</td>
+                        <td className="px-6 py-4">Très élevée</td>
+                        <td className="px-6 py-4">Modérée</td>
                       </tr>
                     </tbody>
                   </table>

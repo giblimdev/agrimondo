@@ -1,3 +1,5 @@
+//@/app/public/apiculture/page.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -13,6 +15,14 @@ import {
 } from "lucide-react";
 import Ruches from "./Ruches";
 
+// Fonction pour extraire l'ID d'une vidéo YouTube à partir de l'URL
+function getYouTubeEmbedUrl(url: string): string {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  const videoId = match && match[2].length === 11 ? match[2] : null;
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+}
+
 export default function ApiculturePage() {
   const [activeModule, setActiveModule] = useState(0);
 
@@ -22,9 +32,9 @@ export default function ApiculturePage() {
       title: "Introduction à l'Apiculture",
       icon: <Bug className="w-6 h-6" />,
       content: {
-        video: "https://www.youtube.com/watch?v=exemple_intro",
+        video: "https://www.youtube.com/watch?v=jeFxOUZreXI", // HOW TO START BEEKEEPING 2026
         description:
-          "Découvrez les raisons de devenir apiculteur et les bases de cette passion",
+          "Introduction étape par étape pour débuter en apiculture en 2026",
       },
     },
     {
@@ -33,28 +43,24 @@ export default function ApiculturePage() {
       icon: <BookOpen className="w-6 h-6" />,
       sections: [
         {
-          title: "Biologie de l'Abeille",
-          video: "https://www.youtube.com/watch?v=exemple_biologie",
+          title: "Biologie & Rôle des Abeilles",
+          video: "https://www.youtube.com/watch?v=WovgtlHY9_k", // Varroa biology utile aussi pour comprendre abeilles
+          points: ["Castes, cycles biologiques", "Rôle de chaque caste"],
+        },
+        {
+          title: "Organisation Sociale de la Ruche",
+          video: "https://www.youtube.com/watch?v=CAW9hDypi9o", // Inspect beehive basics
           points: [
-            "Les trois castes et leurs cycles biologiques",
-            "Développement de l'œuf à l'adulte",
+            "Communication et danse des abeilles",
+            "Division du travail par âge",
           ],
         },
         {
-          title: "Organisation Sociale",
-          video: "https://www.youtube.com/watch?v=exemple_communication",
+          title: "Types de Ruches & Choix",
+          video: "https://www.youtube.com/watch?v=WmYM2PWTZDg", // Dadant, Langstroth, Warré
           points: [
-            "Communication : danse des abeilles",
-            "Division du travail selon l'âge",
-          ],
-        },
-        {
-          title: "Cadre Légal",
-          video: "https://www.youtube.com/watch?v=exemple_reglementation",
-          points: [
-            "Déclaration des ruches",
-            "Distances légales",
-            "Normes sanitaires",
+            "Ruche Dadant vs Langstroth vs Warré",
+            "Avantages et inconvénients",
           ],
         },
       ],
@@ -65,19 +71,14 @@ export default function ApiculturePage() {
       icon: <Package className="w-6 h-6" />,
       sections: [
         {
-          title: "Matériel de l'Apiculteur",
-          video: "https://www.youtube.com/watch?v=1O9LmzhoRKI",
-          points: ["Équipement de protection", "Outils essentiels"],
-        },
-        {
-          title: "Type de Ruche",
-          video: "https://www.youtube.com/watch?v=TD6Cncx1DjA",
-          points: ["Dadant vs Langstroth vs Warré", "Avantages/inconvénients"],
+          title: "Matériel de base",
+          video: "https://www.youtube.com/watch?v=jeFxOUZreXI", // Même vidéo d’intro utile
+          points: ["Équipement de protection", "Outils indispensables"],
         },
         {
           title: "Implantation du Rucher",
-          video: "https://www.youtube.com/watch?v=exemple_implantation",
-          points: ["Critères d'emplacement", "Aménagement pratique"],
+          video: "https://www.youtube.com/watch?v=WmYM2PWTZDg", // Choix ruche & emplacement
+          points: ["Critères d'emplacement", "Orientation & ombrage"],
         },
       ],
     },
@@ -87,24 +88,14 @@ export default function ApiculturePage() {
       icon: <Heart className="w-6 h-6" />,
       sections: [
         {
-          title: "Installation d'un Essaim",
-          video: "https://www.youtube.com/watch?v=exemple_essaim",
-          points: ["Achat ou récupération", "Transvasement ruchette → ruche"],
-        },
-        {
           title: "Visite de Contrôle",
-          video: "https://www.youtube.com/watch?v=exemple_visite",
-          points: ["Fréquence des visites", "Lecture d'un cadre"],
+          video: "https://www.youtube.com/watch?v=CAW9hDypi9o", // Inspection étape par étape
+          points: ["Fréquence des visites", "Lecture d’un cadre"],
         },
         {
-          title: "Gestion de l'Essaimage",
-          video: "https://www.youtube.com/watch?v=exemple_essaimage",
-          points: ["Signes précurseurs", "Récupération d'essaim"],
-        },
-        {
-          title: "Multiplication",
-          video: "https://www.youtube.com/watch?v=exemple_division",
-          points: ["Division de ruche", "Création de nuclei"],
+          title: "Essaimage",
+          video: "https://www.youtube.com/watch?v=jeFxOUZreXI", // Général débutant encore pertinent
+          points: ["Signes avant essaimage", "Réduire l’essaimage"],
         },
       ],
     },
@@ -114,41 +105,31 @@ export default function ApiculturePage() {
       icon: <Shield className="w-6 h-6" />,
       sections: [
         {
-          title: "Lutte contre Varroa",
-          video: "https://www.youtube.com/watch?v=exemple_varroa",
-          points: ["Méthodes de monitoring", "Traitements biologiques"],
+          title: "Surveillance Varroa",
+          video: "https://www.youtube.com/watch?v=lEIQRak0GXI", // Beekeeping mite control
+          points: ["Méthodes de monitoring", "Seuils d’intervention"],
         },
         {
-          title: "Maladies et Ravageurs",
-          video: "https://www.youtube.com/watch?v=exemple_maladies",
-          points: ["Reconnaître les loques", "Lutte contre frelon asiatique"],
-        },
-        {
-          title: "Préparation Hivernage",
-          video: "https://www.youtube.com/watch?v=exemple_hivernage",
-          points: ["Nourrissage d'automne", "Isolation et protection"],
+          title: "Traitement Varroa",
+          video: "https://www.youtube.com/watch?v=lO56YPhZSSs", // Traitements varroa recommandés
+          points: ["Options traitement", "Calendrier annuel"],
         },
       ],
     },
     {
       id: 5,
-      title: "Production et Récolte",
+      title: "Production & Récolte",
       icon: <Droplets className="w-6 h-6" />,
       sections: [
         {
-          title: "Comprendre les Miellées",
-          video: "https://www.youtube.com/watch?v=exemple_miellee",
-          points: ["Calendrier des floraisons", "Observation des entrées"],
+          title: "Calendrier des Miellées",
+          video: "https://www.youtube.com/watch?v=jeFxOUZreXI", // Vidéo intro générale encore pertinente
+          points: ["Observation des floraisons", "Planification saisonnière"],
         },
         {
-          title: "Récolte du Miel",
-          video: "https://www.youtube.com/watch?v=exemple_extraction",
-          points: ["Moment optimal", "Extraction et maturation"],
-        },
-        {
-          title: "Autres Produits",
-          video: "https://www.youtube.com/watch?v=exemple_produits",
-          points: ["Récolte de pollen", "Production de propolis"],
+          title: "Récolte de Miel",
+          video: "https://www.youtube.com/watch?v=jeFxOUZreXI", // Recolte expliqué globalement
+          points: ["Moment optimal", "Extraction & maturation"],
         },
       ],
     },
@@ -158,19 +139,9 @@ export default function ApiculturePage() {
       icon: <Bug className="w-6 h-6" />,
       sections: [
         {
-          title: "Sélection des Souches",
-          video: "https://www.youtube.com/watch?v=exemple_selection",
-          points: ["Critères sur 2-3 ans", "Marquage des reines"],
-        },
-        {
-          title: "Technique du Greffage",
-          video: "https://www.youtube.com/watch?v=exemple_greffage",
-          points: ["Matériel spécifique", "Prélèvement de larve"],
-        },
-        {
-          title: "Méthodes Alternatives",
-          video: "https://www.youtube.com/watch?v=exemple_sans_greffe",
-          points: ["Méthode Miller", "Systèmes Cupularve"],
+          title: "Notions essentielles",
+          video: "https://www.youtube.com/watch?v=jeFxOUZreXI", // Pas de lien spécialisé, utiliser intro complète
+          points: ["Sélection des souches", "Pourquoi élever des reines"],
         },
       ],
     },
@@ -264,12 +235,16 @@ export default function ApiculturePage() {
                       <h3 className="text-xl font-bold text-gray-800 mb-4">
                         Vidéo d'introduction
                       </h3>
-                      <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <button className="bg-red-600 text-white p-4 rounded-full hover:bg-red-700 transition-transform hover:scale-105">
-                            <Play className="w-8 h-8" />
-                          </button>
-                        </div>
+                      <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden">
+                        <iframe
+                          className="w-full h-full"
+                          src={getYouTubeEmbedUrl(
+                            modules[activeModule].content!.video,
+                          )}
+                          title="Vidéo d'introduction"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
                       </div>
                       <p className="mt-4 text-gray-600">
                         {modules[activeModule].content?.description}
@@ -317,8 +292,8 @@ export default function ApiculturePage() {
                         key={index}
                         className="border-l-4 border-amber-500 pl-6 py-2"
                       >
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+                          <div className="flex-1">
                             <h3 className="text-xl font-bold text-gray-800 mb-2">
                               {section.title}
                             </h3>
@@ -335,30 +310,24 @@ export default function ApiculturePage() {
                             href={section.video}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors whitespace-nowrap"
                           >
                             <Play className="w-4 h-4" />
                             <span className="text-sm font-medium">
-                              Voir la vidéo
+                              Voir sur YouTube
                             </span>
                           </a>
                         </div>
 
-                        {/* Video Preview */}
-                        <div className="mt-4 bg-gray-900 rounded-lg overflow-hidden">
-                          <div className="p-4 text-white">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
-                                <Play className="w-5 h-5" />
-                              </div>
-                              <div>
-                                <p className="font-medium">Vidéo conseillée</p>
-                                <p className="text-sm text-gray-300">
-                                  Durée : ~5-10 minutes
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+                        {/* Video Embed */}
+                        <div className="mt-4 aspect-video bg-gray-900 rounded-lg overflow-hidden">
+                          <iframe
+                            className="w-full h-full"
+                            src={getYouTubeEmbedUrl(section.video)}
+                            title={section.title}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
                         </div>
                       </div>
                     ))}
