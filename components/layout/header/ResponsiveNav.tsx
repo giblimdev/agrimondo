@@ -1,9 +1,10 @@
 "use client";
 
-import * as React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   Menu,
+  X,
   ChevronDown,
   Home,
   Sprout,
@@ -29,17 +30,14 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import Logo from "./Logo";
-import UserMenu from "./UserMenu";
-import { buildNavTree } from "./navUtils";
-import { NAV_FLAT } from "./MainNaveData";
 
 type Role = "public" | "user" | "client" | "pro" | "dev" | "admin";
 
-type NavItem = {
+export type NavItem = {
   id: string;
   label: string;
   href?: string | null;
@@ -50,27 +48,23 @@ type NavItem = {
   children: NavItem[];
 };
 
-interface HeaderProps {
-  userRole?: Role;
-}
-
 // Icônes pour chaque section
-const getIcon = (id: string, size = "w-4 h-4") => {
+const getIcon = (id: string) => {
   const icons: Record<string, React.ReactNode> = {
-    home: <Home className={size} />,
-    cultures: <Sprout className={size} />,
-    myco: <Sprout className={size} />,
-    aqua: <Droplets className={size} />,
-    api: <Bug className={size} />,
-    avi: <Bird className={size} />,
-    bsf: <Bug className={size} />,
-    recettes: <UtensilsCrossed className={size} />,
-    compliance: <FileText className={size} />,
-    pro: <Briefcase className={size} />,
-    dev: <Code className={size} />,
-    admin: <Shield className={size} />,
+    home: <Home className="w-5 h-5" />,
+    cultures: <Sprout className="w-5 h-5" />,
+    myco: <Sprout className="w-5 h-5" />,
+    aqua: <Droplets className="w-5 h-5" />,
+    api: <Bug className="w-5 h-5" />,
+    avi: <Bird className="w-5 h-5" />,
+    bsf: <Bug className="w-5 h-5" />,
+    recettes: <UtensilsCrossed className="w-5 h-5" />,
+    compliance: <FileText className="w-5 h-5" />,
+    pro: <Briefcase className="w-5 h-5" />,
+    dev: <Code className="w-5 h-5" />,
+    admin: <Shield className="w-5 h-5" />,
   };
-  return icons[id] || <Sprout className={size} />;
+  return icons[id] || <Sprout className="w-5 h-5" />;
 };
 
 // Couleurs pour chaque section
@@ -92,108 +86,127 @@ const getColorClass = (id: string) => {
   return colors[id] || "hover:bg-gray-50 hover:text-gray-700";
 };
 
-export default function Header({ userRole = "public" }: HeaderProps) {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [openSubmenu, setOpenSubmenu] = React.useState<string | null>(null);
+interface ResponsiveNavProps {
+  navItems: NavItem[];
+  userRole?: Role;
+  className?: string;
+}
 
-  // Construire l'arbre de navigation
-  const navTree = React.useMemo(() => buildNavTree(NAV_FLAT), []);
+export default function ResponsiveNav({
+  navItems,
+  userRole = "public",
+  className,
+}: ResponsiveNavProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   // Filtrer les items selon le rôle
-  const visibleItems = React.useMemo(
-    () =>
-      navTree.filter(
-        (item) =>
-          item.isVisible &&
-          item.allowedRoles.includes(userRole) &&
-          !item.parentId,
-      ),
-    [navTree, userRole],
+  const visibleItems = navItems.filter(
+    (item) =>
+      item.isVisible && item.allowedRoles.includes(userRole) && !item.parentId,
   );
 
   return (
-    <header className="w-full border-b bg-white/95 backdrop-blur-sm dark:bg-gray-950/95 sticky top-0 z-50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
-        <Logo />
+    <nav
+      className={cn(
+        "sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-lg dark:bg-gray-950/80",
+        className,
+      )}
+    >
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link
+            href="/"
+            className="flex items-center space-x-2 font-bold text-xl bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent"
+          >
+            <Sprout className="w-8 h-8 text-green-600" />
+            <span>AgroHub</span>
+          </Link>
 
-        {/* Navigation Desktop */}
-        <nav className="hidden md:flex flex-1 justify-center">
-          <NavigationMenu>
-            <NavigationMenuList>
-              {visibleItems.map((item) => {
-                const hasChildren = item.children && item.children.length > 0;
+          {/* Navigation Desktop */}
+          <div className="hidden lg:flex items-center space-x-1">
+            <NavigationMenu>
+              <NavigationMenuList>
+                {visibleItems.map((item) => {
+                  const hasChildren = item.children && item.children.length > 0;
 
-                if (!hasChildren && item.href) {
+                  if (!hasChildren && item.href) {
+                    return (
+                      <NavigationMenuItem key={item.id}>
+                        <Link href={item.href} legacyBehavior passHref>
+                          <NavigationMenuLink
+                            className={cn(
+                              "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                              getColorClass(item.id),
+                            )}
+                          >
+                            <span className="mr-2">{getIcon(item.id)}</span>
+                            {item.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    );
+                  }
+
                   return (
                     <NavigationMenuItem key={item.id}>
-                      <Link
-                        href={item.href}
+                      <NavigationMenuTrigger
                         className={cn(
-                          "group inline-flex h-9 w-max items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                          "h-10 px-4 py-2 text-sm font-medium",
                           getColorClass(item.id),
                         )}
                       >
                         <span className="mr-2">{getIcon(item.id)}</span>
                         {item.label}
-                      </Link>
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                          {item.children.map((child) => (
+                            <li key={child.id}>
+                              <Link
+                                href={child.href || "#"}
+                                legacyBehavior
+                                passHref
+                              >
+                                <NavigationMenuLink
+                                  className={cn(
+                                    "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
+                                    getColorClass(item.id),
+                                  )}
+                                >
+                                  <div className="text-sm font-medium leading-none">
+                                    {child.label}
+                                  </div>
+                                </NavigationMenuLink>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
                     </NavigationMenuItem>
                   );
-                }
-
-                return (
-                  <NavigationMenuItem key={item.id}>
-                    <NavigationMenuTrigger
-                      className={cn(
-                        "h-9 px-3 py-2 text-sm font-medium",
-                        getColorClass(item.id),
-                      )}
-                    >
-                      <span className="mr-2">{getIcon(item.id)}</span>
-                      {item.label}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                        {item.children.map((child) => (
-                          <li key={child.id}>
-                            <Link
-                              href={child.href || "#"}
-                              className={cn(
-                                "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
-                                getColorClass(item.id),
-                              )}
-                            >
-                              <div className="text-sm font-medium leading-none">
-                                {child.label}
-                              </div>
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                );
-              })}
-            </NavigationMenuList>
-          </NavigationMenu>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <UserMenu />
+                })}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
 
           {/* Menu Mobile */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Ouvrir le menu</span>
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-80 overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle className="flex items-center space-x-2">
-                    <Sprout className="w-5 h-5 text-green-600" />
-                    <span>Navigation</span>
+                    <Sprout className="w-6 h-6 text-green-600" />
+                    <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                      AgroHub
+                    </span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="mt-8 space-y-2">
@@ -213,7 +226,7 @@ export default function Header({ userRole = "public" }: HeaderProps) {
                             getColorClass(item.id),
                           )}
                         >
-                          {getIcon(item.id, "w-5 h-5")}
+                          {getIcon(item.id)}
                           <span className="font-medium">{item.label}</span>
                         </Link>
                       );
@@ -231,7 +244,7 @@ export default function Header({ userRole = "public" }: HeaderProps) {
                           )}
                         >
                           <div className="flex items-center space-x-3">
-                            {getIcon(item.id, "w-5 h-5")}
+                            {getIcon(item.id)}
                             <span className="font-medium">{item.label}</span>
                           </div>
                           <ChevronDown
@@ -242,7 +255,7 @@ export default function Header({ userRole = "public" }: HeaderProps) {
                           />
                         </button>
                         {isOpen && (
-                          <div className="ml-8 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-4">
+                          <div className="ml-8 space-y-1 border-l-2 border-gray-200 pl-4">
                             {item.children.map((child) => (
                               <Link
                                 key={child.id}
@@ -264,6 +277,6 @@ export default function Header({ userRole = "public" }: HeaderProps) {
           </div>
         </div>
       </div>
-    </header>
+    </nav>
   );
 }

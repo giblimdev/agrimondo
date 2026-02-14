@@ -171,7 +171,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       {/* Hero */}
-      <div className="relative bg-linear-to-r from-emerald-300 to-green-900 py-12 text-white">
+      <div className="relative bg-linear-to-r from-emerald-500 to-green-700 py-12 text-white">
         {/* Image de fond avec padding */}
         <div className="absolute inset-0 p-10">
           <div className="relative h-full w-full">
