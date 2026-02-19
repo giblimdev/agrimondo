@@ -1,50 +1,62 @@
+// Header.tsx
 "use client";
 
 import * as React from "react";
+import { Menu, X } from "lucide-react";
+
 import Logo from "./Logo";
-import  MainNav  from "./MainNav";
+import MainNav from "./MainNav";
 import UserMenu from "./UserMenu";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  return (
-    <header className="w-full border-b bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <Logo />
+  const toggleMobile = () => setMobileOpen((prev) => !prev);
+  const closeMobile = () => setMobileOpen(false);
 
-        {/* Desktop nav */}
-        <div className="hidden md:block">
-          <MainNav variant="desktop" onNavigate={() => {}} />
+  return (
+    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-2 sm:px-4 lg:px-6">
+        {/* Logo + Desktop Nav */}
+        <div className="flex flex-1 items-center gap-4">
+          <Logo />
+
+          {/* Desktop nav : PAS de overflow-x-auto ici, ça couperait les dropdowns */}
+          <nav className="hidden flex-1 lg:block">
+            <MainNav variant="desktop" onNavigate={closeMobile} />
+          </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right side: user + burger */}
+        <div className="ml-2 flex items-center gap-3">
           <UserMenu />
 
-          {/* Mobile button */}
+          {/* Mobile toggle */}
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center rounded border px-3 py-2 text-sm"
-            aria-label="Ouvrir le menu"
-            aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen((v) => !v)}
+            onClick={toggleMobile}
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background p-2 text-foreground hover:bg-accent hover:text-accent-foreground lg:hidden"
+            aria-label={
+              mobileOpen ? "Fermer la navigation" : "Ouvrir la navigation"
+            }
           >
-            ☰
+            {mobileOpen ? (
+              <X className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Mobile nav panel */}
-      {mobileOpen ? (
-        <div className="md:hidden border-t px-4 py-3">
-          <MainNav
-            variant="mobile"
-            onNavigate={() => {
-              setMobileOpen(false);
-            }}
-          />
+      {mobileOpen && (
+        <div className="border-t bg-background lg:hidden">
+          <div className="mx-auto max-w-7xl px-4 py-3">
+            <MainNav variant="mobile" onNavigate={closeMobile} />
+          </div>
         </div>
-      ) : null}
+      )}
     </header>
   );
 }

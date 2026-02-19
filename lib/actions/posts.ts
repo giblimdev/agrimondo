@@ -26,7 +26,10 @@ export async function createPost(formData: FormData) {
     console.log("rawData keys:", Object.keys(rawData));
     console.log("title:", rawData.title);
     console.log("slug:", rawData.slug);
-    console.log("description length:", (rawData.description as string)?.length);
+    console.log(
+      "description length:",
+      (rawData.description as string)?.length,
+    );
     console.log(
       "img (first 50 chars):",
       (rawData.img as string)?.substring(0, 50),
@@ -219,7 +222,7 @@ export async function getPostBySlug(slug: string, incrementView = true) {
 }
 
 // ------------------------------------------------------------------
-// READ My post (liste paginée avec filtres)
+// READ My post (liste sans pagination, avec filtres par statut)
 // ------------------------------------------------------------------
 export async function getUserPostsByStatus(
   userId: string,
@@ -316,7 +319,7 @@ export async function getPosts({
 
     console.log("Where clause construite");
 
-    const [posts, total] = await prisma.$transaction([
+    const [posts, total] = await Promise.all([
       prisma.post.findMany({
         where,
         include: {

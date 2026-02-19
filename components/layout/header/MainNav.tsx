@@ -1,24 +1,18 @@
+// MainNav.tsx
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import {
   NAV_FLAT,
   NavItem as NavItemType,
   Role,
 } from "@/components/layout/header/MainNavData";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 interface MainNavProps {
   variant: "desktop" | "mobile";
@@ -33,68 +27,57 @@ export default function MainNav({
 }: MainNavProps) {
   const pathname = usePathname();
 
-  // Build and filter navigation tree based on role and visibility
   const navTree = useMemo(() => {
     const itemMap = new Map<string, NavItemType>();
     NAV_FLAT.forEach((item) => {
-      itemMap.set(item.id, { ...item, children: [] });
+      itemMap.set(item.id, { ...item, children: [] as NavItemType[] });
     });
 
     const roots: NavItemType[] = [];
     itemMap.forEach((item) => {
       if (item.parentId && itemMap.has(item.parentId)) {
-        const parent = itemMap.get(item.parentId)!;
-        parent.children.push(item);
+        itemMap.get(item.parentId)!.children!.push(item);
       } else if (!item.parentId) {
         roots.push(item);
       }
     });
 
     const sortByOrder = (items: NavItemType[]) => {
-      items.sort((a, b) => a.order - b.order);
-      items.forEach((item) => sortByOrder(item.children));
+      items.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+      items.forEach((item) => item.children && sortByOrder(item.children));
     };
     sortByOrder(roots);
 
-    const filterByRole = (items: NavItemType[]): NavItemType[] => {
-      return items
-        .filter(
-          (item) => item.isVisible && item.allowedRoles.includes(userRole),
-        )
-        .map((item) => ({
-          ...item,
-          children: filterByRole(item.children),
-        }))
-        .filter((item) => item.children.length > 0 || item.href);
-    };
-
-    return filterByRole(roots);
+    return roots
+      .filter((item) => item.isVisible && item.allowedRoles.includes(userRole))
+      .map((item) => ({
+        ...item,
+        children: (item.children || []).filter(
+          (child) => child.isVisible && child.allowedRoles.includes(userRole)
+        ),
+      }))
+      .filter((item) => item.children.length > 0 || item.href);
   }, [userRole]);
 
   if (navTree.length === 0) return null;
 
   if (variant === "desktop") {
     return (
-      <NavigationMenu suppressHydrationWarning>
-        {" "}
-        {/* 👈 FIX : ignore les différences d'IDs Radix */}
-        <NavigationMenuList>
-          {navTree.map((item) => (
-            <DesktopNavItem
-              key={item.id}
-              item={item}
-              pathname={pathname}
-              onNavigate={onNavigate}
-            />
-          ))}
-        </NavigationMenuList>
-      </NavigationMenu>
+      <ul className="flex items-center gap-1 list-none m-0 p-0">
+        {navTree.map((item) => (
+          <DesktopNavItem
+            key={item.id}
+            item={item}
+            pathname={pathname}
+            onNavigate={onNavigate}
+          />
+        ))}
+      </ul>
     );
   }
 
-  // Mobile variant
   return (
-    <nav className="flex flex-col gap-1">
+    <div className="space-y-1">
       {navTree.map((item) => (
         <MobileNavItem
           key={item.id}
@@ -104,145 +87,234 @@ export default function MainNav({
           level={0}
         />
       ))}
-    </nav>
+    </div>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Desktop navigation item (with optional dropdown)                          */
-/* -------------------------------------------------------------------------- */
-function DesktopNavItem({
-  item,
-  pathname,
-  onNavigate,
-}: {
+// ─── Desktop Nav Item (portal dropdown) ──────────────────────────────────────
+
+interface DesktopNavItemProps {
   item: NavItemType;
   pathname: string;
   onNavigate: () => void;
-}) {
-  const hasChildren = item.children.length > 0;
+}
+
+function DesktopNavItem({ item, pathname, onNavigate }: DesktopNavItemProps) {
+  const [open, setOpen] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, []);
+
+  const hasChildren = item.children && item.children.length > 0;
   const isActive = item.href
     ? pathname === item.href || pathname.startsWith(item.href + "/")
-    : false;
+    : item.children?.some(
+        (child) =>
+          child.href &&
+          (pathname === child.href || pathname.startsWith(child.href + "/"))
+      );
 
-  if (hasChildren) {
+  const openDropdown = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+      });
+    }
+    setOpen(true);
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    closeTimer.current = setTimeout(() => setOpen(false), 150);
+  }, []);
+
+  const cancelClose = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  }, []);
+
+  if (!hasChildren) {
     return (
-      <NavigationMenuItem>
-        <NavigationMenuTrigger
-          className={cn(isActive && "text-foreground font-medium")}
-        >
-          {item.label}
-        </NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-            {item.children
-              .filter((child) => child.href)
-              .map((child) => (
-                <ListItem
-                  key={child.id}
-                  href={child.href!}
-                  title={child.label}
-                  onClick={onNavigate}
-                  className={cn(
-                    child.href &&
-                      (pathname === child.href ||
-                        pathname.startsWith(child.href + "/")) &&
-                      "bg-accent text-accent-foreground",
-                  )}
-                />
-              ))}
-          </ul>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
-    );
-  }
-
-  if (!item.href) return null;
-
-  return (
-    <NavigationMenuItem>
-      <Link href={item.href} legacyBehavior passHref>
-        <NavigationMenuLink
+      <li>
+        <Link
+          href={item.href ?? "#"}
           onClick={onNavigate}
           className={cn(
-            "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-            isActive && "bg-accent text-accent-foreground",
+            "flex items-center px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors",
+            "hover:bg-accent hover:text-accent-foreground",
+            isActive &&
+              "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
           )}
         >
           {item.label}
-        </NavigationMenuLink>
-      </Link>
-    </NavigationMenuItem>
+        </Link>
+      </li>
+    );
+  }
+
+  return (
+    <li className="relative list-none">
+      {/* Trigger button */}
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={open}
+        onMouseEnter={openDropdown}
+        onMouseLeave={scheduleClose}
+        onFocus={openDropdown}
+        className={cn(
+          "flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors cursor-pointer",
+          "hover:bg-accent hover:text-accent-foreground",
+          isActive &&
+            "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+          open && "bg-accent text-accent-foreground"
+        )}
+      >
+        {item.label}
+        <ChevronDown
+          className={cn(
+            "h-3.5 w-3.5 opacity-60 transition-transform duration-200",
+            open && "rotate-180"
+          )}
+        />
+      </button>
+
+      {/* Dropdown via React Portal — bypasses any overflow:hidden/auto on parent elements */}
+      {mounted &&
+        open &&
+        createPortal(
+          <div
+            role="menu"
+            onMouseEnter={cancelClose}
+            onMouseLeave={scheduleClose}
+            style={{
+              position: "absolute",
+              top: dropdownPos.top,
+              left: dropdownPos.left,
+              zIndex: 9999,
+              minWidth: "220px",
+            }}
+            className="rounded-lg border border-border bg-popover shadow-xl overflow-hidden"
+          >
+            {/* "Voir tout" link for the parent page */}
+            {item.href && (
+              <Link
+                href={item.href}
+                role="menuitem"
+                onClick={() => {
+                  onNavigate();
+                  setOpen(false);
+                }}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-foreground bg-muted/50 hover:bg-accent hover:text-accent-foreground border-b border-border transition-colors"
+              >
+                Voir tout — {item.label}
+              </Link>
+            )}
+
+            {item.children.map((child) =>
+              child.href ? (
+                <Link
+                  key={child.id}
+                  href={child.href}
+                  role="menuitem"
+                  onClick={() => {
+                    onNavigate();
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-2.5 text-sm transition-colors",
+                    "hover:bg-accent hover:text-accent-foreground",
+                    pathname === child.href ||
+                      pathname.startsWith(child.href + "/")
+                      ? "bg-emerald-50 text-emerald-700 font-medium dark:bg-emerald-950 dark:text-emerald-300"
+                      : "text-foreground"
+                  )}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 opacity-70 flex-shrink-0" />
+                  {child.label}
+                </Link>
+              ) : null
+            )}
+          </div>,
+          document.body
+        )}
+    </li>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Mobile navigation item (expandable)                                       */
-/* -------------------------------------------------------------------------- */
+// ─── Mobile Nav Item ──────────────────────────────────────────────────────────
+
 function MobileNavItem({
   item,
   pathname,
   onLinkClick,
-  level,
+  level = 0,
 }: {
   item: NavItemType;
   pathname: string;
   onLinkClick: () => void;
-  level: number;
+  level?: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const hasChildren = item.children.length > 0;
+  const hasChildren = item.children && item.children.length > 0;
   const isActive = item.href
     ? pathname === item.href || pathname.startsWith(item.href + "/")
     : false;
 
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between">
+    <div>
+      <div
+        className={cn(
+          "flex items-center justify-between rounded-lg transition-colors",
+          isActive
+            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+            : "hover:bg-accent hover:text-accent-foreground"
+        )}
+        style={{ paddingLeft: `${12 + level * 16}px` }}
+      >
         {item.href ? (
           <Link
             href={item.href}
+            className="flex-1 py-2.5 pr-2 text-sm font-medium"
             onClick={onLinkClick}
-            className={cn(
-              "flex-1 py-2 text-sm font-medium transition-colors hover:text-foreground",
-              isActive
-                ? "text-foreground font-semibold"
-                : "text-muted-foreground",
-              level > 0 && "pl-4",
-            )}
           >
             {item.label}
           </Link>
         ) : (
-          <span
-            className={cn(
-              "flex-1 py-2 text-sm font-medium",
-              level > 0 && "pl-4",
-            )}
-          >
+          <span className="flex-1 py-2.5 pr-2 text-sm font-medium">
             {item.label}
           </span>
         )}
+
         {hasChildren && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-            className="h-8 w-8"
-            aria-expanded={isOpen}
+          <button
+            type="button"
+            onClick={() => setIsOpen((prev) => !prev)}
+            className="p-2 mr-1 rounded-md hover:bg-muted transition-colors"
+            aria-label={isOpen ? "Fermer" : "Ouvrir"}
           >
-            <ChevronDown
+            <ChevronRight
               className={cn(
-                "h-4 w-4 transition-transform",
-                isOpen && "rotate-180",
+                "h-4 w-4 transition-transform duration-200",
+                isOpen && "rotate-90"
               )}
             />
-            <span className="sr-only">{isOpen ? "Collapse" : "Expand"}</span>
-          </Button>
+          </button>
         )}
       </div>
+
       {hasChildren && isOpen && (
-        <div className="ml-4 border-l pl-2">
+        <div className="mt-0.5 space-y-0.5 border-l-2 border-emerald-200 ml-4 dark:border-emerald-800">
           {item.children.map((child) => (
             <MobileNavItem
               key={child.id}
@@ -257,34 +329,3 @@ function MobileNavItem({
     </div>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* ListItem component used inside dropdown                                    */
-/* -------------------------------------------------------------------------- */
-const ListItem = React.forwardRef<
-  HTMLAnchorElement,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className,
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          {children && (
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-              {children}
-            </p>
-          )}
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = "ListItem";
