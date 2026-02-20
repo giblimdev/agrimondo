@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CardPost } from "./CardPost";
 import { getUserPostsByStatus } from "@/lib/actions/posts";
 
-type MyPostProps = {
+type MyPostProps = { 
   userId: string;
   initialPublishedPosts: any[]; // Vous pouvez typer plus précisément avec le type de Post
 };
@@ -81,8 +81,7 @@ export default function MyPost({ userId, initialPublishedPosts }: MyPostProps) {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
       ) : posts.length > 0 ? (
-        <div className="space-y-6">
-          {posts.map((post) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">          {posts.map((post) => (
             <CardPost key={post.id} post={post} showActions showEditDelete />
           ))}
         </div>

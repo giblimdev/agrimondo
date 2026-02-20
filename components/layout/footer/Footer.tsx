@@ -96,7 +96,7 @@ export default function Footer() {
   return (
     <>
       {/* Conteneur avec vague inversée - CORRIGÉ */}
-      <div className="relative mt-20">
+      <div className="relative mt-30">
         {/* Vague émeraude qui "sort" du footer vers le haut */}
         <div className="absolute bottom-full left-0 right-0 h-16 overflow-hidden pointer-events-none">
           <svg
